@@ -1,0 +1,14 @@
+{
+  "name": "progweb2",
+  "author": "Micael Levi <mykael2010@hotmail.com>",
+  "homepage": "https://github.com/micalevisk/ProgWeb2.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/micalevisk/ProgWeb2.git"
+  },
+  "devDependencies": {
+    "eslint": "^6.1.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.18.2"
+  }
+}
