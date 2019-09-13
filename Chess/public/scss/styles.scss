@@ -1,0 +1,30 @@
+/* */
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+
+/* container About */
+.about__ {
+  h1 {
+    text-align: center;
+  }
+
+  img {
+    width: 25%;
+    height: auto;
+    float: left;
+    margin-right: 15px;
+    border: 1px solid #C8CCD1;
+    background-color: #FFF;
+  }
+
+  p {
+    font-size: x-large;
+  }
+}

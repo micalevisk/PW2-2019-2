@@ -1,0 +1,89 @@
+{
+    //~~~~~~~~~~~~~~~~~~~~~~~//
+    //        EDITOR         //
+    //~~~~~~~~~~~~~~~~~~~~~~~//
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.fontFamily": "Fira Code, Menlo, Fira Mono, Consolas, 'Courier New', monospace",
+    "editor.fontLigatures": true,
+    "editor.renderControlCharacters": true,
+    "editor.renderIndentGuides": true,
+    "editor.renderWhitespace": "all",
+    "editor.useTabStops": false,
+    "editor.fontSize": 13,
+    "[java]": {
+        "editor.tabSize": 4
+    },
+
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~//
+    //         WORKBENCH        //
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~//
+    "workbench.activityBar.visible": true,
+    "workbench.colorCustomizations": {
+        "editorWhitespace.foreground": "#282c34",
+        "gitDecoration.ignoredResourceForeground": "#73737a"
+    },
+    "workbench.settings.enableNaturalLanguageSearch": false,
+    "workbench.enableExperiments": false,
+
+    //~~~~~~~~~~~~~~~~~~~~~~~//
+    //         FILES         //
+    //~~~~~~~~~~~~~~~~~~~~~~~//
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+    "files.trimTrailingWhitespace": true,
+    "files.associations": {
+        "*.make": "makefile",
+        "*.bats": "shellscript"
+    },
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/*.swp": true
+    },
+
+
+    //~~~~~~~~~~~~~~~~~~~~~~~//
+    //        WINDOW         //
+    //~~~~~~~~~~~~~~~~~~~~~~~//
+    "window.zoomLevel": -1,
+
+
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~//
+    //         EXPLORER         //
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~//
+    "explorer.confirmDragAndDrop": false,
+    "explorer.autoReveal": false,
+
+
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+    //        EXTENSIONS         //
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+    "extensions.ignoreRecommendations": false,
+
+
+    //~~~~~~~~~~~~~~~~~~~~~~~//
+    //        OTHERS         //
+    //~~~~~~~~~~~~~~~~~~~~~~~//
+    "git.confirmSync": false,
+    "git.autofetch": true,
+
+    "terminal.integrated.shell.linux": "/bin/bash",
+
+    "java.errors.incompleteClasspath.severity": "ignore",
+
+    "java.home": "/usr/lib/jvm/java-8-openjdk-amd64",
+
+    "editor.suggestSelection": "first",
+
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+
+    "eslint.autoFixOnSave": true,
+    "editor.minimap.enabled": false,
+    "git.ignoreLimitWarning": true,
+
+    "debug.node.autoAttach": "on"
+}
