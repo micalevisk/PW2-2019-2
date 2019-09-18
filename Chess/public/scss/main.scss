@@ -1,5 +1,7 @@
-/* Bootstrap */
+/* Bootstrap e Bootswatch */
+@import "./_variables.scss";
 @import "../../node_modules/bootstrap/scss/bootstrap.scss";
+@import "./_bootswatch.scss";
 
-/* Major styles */
-@import "styles.scss";
+/* major styles */
+@import "./styles.scss";
