@@ -30,6 +30,8 @@ app.set('views', path.join(__dirname, 'app', 'views'));
  * Middlewares
  */
 
+app.use(express.urlencoded({ extended: false }));
+
 app.use(logger('tiny'));
 
 app.use(express.json());

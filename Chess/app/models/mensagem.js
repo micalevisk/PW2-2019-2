@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     underscored: true,
+    freezeTableName: true,
   });
   mensagem.associate = function(models) {
     // associations can be defined here

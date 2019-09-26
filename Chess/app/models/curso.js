@@ -25,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
     id_area: DataTypes.INTEGER
   }, {
     underscored: true,
+    freezeTableName: true,
   });
   curso.associate = function(models) {
     // associations can be defined here

@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {
     underscored: true,
+    freezeTableName: true,
   });
   partida.associate = function(models) {
     // associations can be defined here

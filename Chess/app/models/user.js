@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
         notEmpty: true,
         len: {
           Args: [3, 50],
-          msg: "O nome precisa ter de 3 a 50 caracteres"
+          msg: 'O nome precisa ter de 3 a 50 caracteres'
         }
       }
     },
@@ -29,6 +29,7 @@ module.exports = (sequelize, DataTypes) => {
     id_curso: DataTypes.INTEGER
   }, {
     underscored: true,
+    freezeTableName: true,
   });
   user.associate = function(models) {
     // associations can be defined here

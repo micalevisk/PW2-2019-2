@@ -1,7 +1,7 @@
 {
   "development": {
-    "username": "pw2",
-    "password": "pw2",
+    "username": "root",
+    "password": "icomp123",
     "database": "chessapp",
     "host": "127.0.0.1",
     "dialect": "mysql"
