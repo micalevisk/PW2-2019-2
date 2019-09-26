@@ -10,9 +10,3 @@
 **Aluno:** Micael Levi ― 21554923 <br>
 
 ----------------------------------------
-
-## Exercícios Resolvidos
-
-| Node |
-|:----:|
-| [`1`](./Node1) |
