@@ -3,5 +3,10 @@
 @import "../../node_modules/bootstrap/scss/bootstrap.scss";
 @import "./_bootswatch.scss";
 
+/* Font Awesome */
+@import "../../node_modules/@fortawesome/fontawesome-free/scss/brands.scss";
+@import "../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss";
+@import "../../node_modules/@fortawesome/fontawesome-free/scss/regular.scss";
+
 /* major styles */
 @import "./styles.scss";

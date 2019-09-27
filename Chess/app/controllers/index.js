@@ -1,5 +1,5 @@
 module.exports.index = (req, res) => {
-  res.render('main/index', { title: 'Express' });
+  res.render('main/index');
 };
 
 module.exports.about = (req, res) => {

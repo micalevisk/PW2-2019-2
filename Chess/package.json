@@ -7,13 +7,14 @@
   "scripts": {
     "start": "DEBUG=chess:* node .",
     "dev": "DEBUG=chess:* NODE_ENV=development nodemon .",
+    "sass:watch": "node-sass --watch public/scss/ --output public/css/",
+    "build-css": "node-sass --include-path scss public/scss/main.scss public/css/main.css",
     "debug": "DEBUG=chess:* nodemon --nolazy --inspect-brk=9229 .",
     "db:migrate": "npx sequelize db:migrate"
   },
   "author": "Micael Levi <mykael2010@hotmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.11.0",
     "bootstrap": "^4.3.1",
     "cookie-parser": "^1.4.4",
     "debug": "^2.6.9",
@@ -25,10 +26,11 @@
     "mysql2": "^1.7.0",
     "node-sass-middleware": "^0.11.0",
     "popper.js": "^1.15.0",
-    "sequelize": "^5.19.0",
-    "sequelize-cli": "^5.5.1"
+    "sequelize": "^5.19.1"
   },
   "devDependencies": {
+    "@fortawesome/fontawesome-free": "^5.11.2",
+    "node-sass": "^4.12.0",
     "nodemon": "^1.19.1"
   }
 }
