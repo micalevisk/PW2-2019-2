@@ -3,7 +3,7 @@
   "author": "Micael Levi <mykael2010@hotmail.com>",
   "homepage": "https://github.com/micalevisk/ProgWeb2.git",
   "scripts": {
-    "postinstall": "cd Chess && npm install"
+    "postinstall": "npm install --prefix Chess"
   },
   "repository": {
     "type": "git",
