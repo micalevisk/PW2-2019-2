@@ -1,1 +1,1 @@
-web: node Chess/bin/www
+web: npm start --prefix Chess
