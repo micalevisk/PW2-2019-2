@@ -1,5 +1,5 @@
-// TODO: middleware para tratar erros já que o try-catch não foi usado
 const models = require('../models');
+const { wrapAsync } = require('../../lib/utils');
 
 const { curso: Curso } = models;
 
@@ -46,10 +46,11 @@ async function remove(req, res) {
   res.end();
 }
 
+
 module.exports = {
-  index,
-  create,
-  read,
-  update,
-  remove,
+  index: wrapAsync(index),
+  create: wrapAsync(create),
+  read: wrapAsync(read),
+  update: wrapAsync(update),
+  remove: wrapAsync(remove),
 };
