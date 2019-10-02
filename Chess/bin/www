@@ -1,8 +1,7 @@
 #!/usr/bin/env node
-/* eslint-disable */
-
 const debug = require('debug')('chess:server');
 const http = require('http');
+const models = require('../app/models');
 const app = require('../app');
 
 /**
@@ -19,9 +18,18 @@ const server = http.createServer(app);
 /**
  * Listen on provided port, on all network interfaces.
  */
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+app.once('ready', function startServer() {
+  server.listen(port);
+  server.on('error', onError);
+  server.on('listening', onListening);
+});
+
+/**
+ * Database health check.
+ */
+models.sequelize
+  .sync() // NOTE: In production, you might want to consider using Migrations
+  .then(() =>  app.emit('ready'));
 
 
 /**

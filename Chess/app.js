@@ -11,8 +11,9 @@ const indexRouter = require('./routes');
 
 const app = express();
 
+
 /**
- * App configs
+ * App config
  */
 
 app.disable('x-powered-by');
@@ -25,6 +26,7 @@ app.engine('hbs', handlebars({
 }));
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'app', 'views'));
+
 
 /**
  * Middlewares
@@ -55,7 +57,11 @@ app.use(sass({
   outputStyle: 'compressed',
 }));
 
-/* Routes */
+
+/**
+ * Routes
+ */
+
 app.use('/', indexRouter);
 
 
