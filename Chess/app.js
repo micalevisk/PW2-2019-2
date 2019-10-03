@@ -48,6 +48,8 @@ app.use('/js', [
   express.static(path.join(__dirname, '/node_modules/popper.js/dist/umd')),
   express.static(path.join(__dirname, '/node_modules/bootstrap/dist/js')),
 ]);
+app.use('/webfonts',
+  express.static(path.join(__dirname, '/node_modules/@fortawesome/fontawesome-free/webfonts')));
 
 app.use(sass({
   src: path.join(__dirname, 'public', 'scss'),

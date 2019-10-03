@@ -1,0 +1,39 @@
+<div class="curso__read">
+
+  <div class="row">
+    <div class="col">
+      <h1>Engenharia de Sofware</h1>
+    </div>
+    <div class="col">
+      <div class="float-right mt-3">
+        <a role="button" href="/curso" class="btn btn-secondary"><i class="fas fa-arrow-left"></i>&nbsp;Voltar</a>
+        <a role="button" href="/curso/update/2" class="btn btn-secondary"><i
+            class="fa fa-pencil-alt"></i>&nbsp;Editar</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+
+      <table class="table table-hover table-borderless">
+        <tbody>
+          <tr class="table-dark">
+            <th scope="row" style="width: 20%">Sigla</th>
+            <td>{{curso.initials}}</td>
+          </tr>
+          <tr class="table-dark">
+            <th scope="row">Descrição</th>
+            <td>{{curso.description}}</td>
+          </tr>
+          <tr class="table-dark">
+            <th scope="row">Área de Conhecimento</th>
+            <td>{{curso.id_area}}</td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+
+</div>

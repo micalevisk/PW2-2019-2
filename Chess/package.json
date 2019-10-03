@@ -7,11 +7,12 @@
   "scripts": {
     "start": "DEBUG=chess:* node .",
     "dev": "DEBUG=chess:* NODE_ENV=development nodemon .",
-    "sass:watch": "node-sass --watch public/scss/ --output public/css/",
+    "sass:w": "node-sass --watch public/scss/ --output public/css/",
     "build-css": "node-sass --include-path scss public/scss/main.scss public/css/main.css",
     "debug": "DEBUG=chess:* nodemon --nolazy --inspect-brk=9229 .",
     "db:migrate-status": "npx sequelize-cli db:migrate:status",
-    "db:migrate": "npx sequelize-cli db:migrate"
+    "db:migrate": "npx sequelize-cli db:migrate",
+    "db:seed-all": "npx sequelize-cli db:seed:all"
   },
   "author": "Micael Levi <mykael2010@hotmail.com>",
   "license": "MIT",

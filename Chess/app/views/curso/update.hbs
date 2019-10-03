@@ -1,8 +1,8 @@
-<div class="curso__create">
+<div class="curso__update">
 
   <div class="row">
     <div class="col-8">
-      <h1>Adicionar Curso</h1>
+      <h1>Editar Curso</h1>
     </div>
     <div class="col-4">
       <div class="float-right mt-4">
@@ -13,49 +13,55 @@
 
   <div class="row">
     <div class="col-8">
-      <form action="/curso/create" method="POST">
+      <form action="/curso/update/{{curso.id}}" method="POST">
 
         <div class="form-group">
           <label for="initials">Sigla</label>
           <input class="form-control" type="text" name="initials" id="initials" placeholder="Informe a sigla do curso"
-            required>
+            value="{{curso.initials}}" required>
           <small class="form-text text-muted">Em caso de dúvida, consulte o <a href="https://ufam.edu.br" rel="noopener"
               target="_blank">site da UFAM</a>.</small>
         </div>
 
         <div class="form-group">
           <label for="name">Nome</label>
-          <input class="form-control" type="text" name="name" id="name" placeholder="Informe o nome do curso" required>
+          <input class="form-control {{hasError errors "name"}}" type="text" name="name" id="name"
+            placeholder="Informe o nome do curso" value="{{curso.name}}" required>
+          <div class="invalid-feedback">{{getErrorForField errors "name"}}</div>
         </div>
 
         <div class="form-group">
           <label for="description">Descrição do curso</label>
-          <textarea class="form-control" name="description" id="description" rows="3" required></textarea>
+          <textarea class="form-control" name="description" id="description" rows="3"
+            required>{{curso.description}}</textarea>
         </div>
 
         <fieldset class="form-group">
           <legend>Área de Conhecimento</legend>
           <div class="form-check">
             <label class="form-check-label">
-              <input type="radio" class="form-check-input" name="id_area" id="area" value="1" required>
+              <input type="radio" class="form-check-input" name="id_area" id="area" value="1"
+                {{checked curso.id_area 1}} required>
               Ciências Exatas &mdash; Computação, engenharias, matemática, estatística, etc.
             </label>
           </div>
           <div class="form-check">
             <label class="form-check-label">
-              <input type="radio" class="form-check-input" name="id_area" id="area" value="2" required>
+              <input type="radio" class="form-check-input" name="id_area" id="area" value="2"
+                {{checked curso.id_area 2}} required>
               Ciências Humanas &mdash; Letras, psicologia, história, geografia, etc.
             </label>
           </div>
           <div class="form-check">
             <label class="form-check-label">
-              <input type="radio" class="form-check-input" name="id_area" id="area" value="3" required>
+              <input type="radio" class="form-check-input" name="id_area" id="area" value="3"
+                {{checked curso.id_area 3}} required>
               Ciências Biológicas &mdash; medicina, odontologia, biologia, agrária, etc.
             </label>
           </div>
         </fieldset>
 
-        <button type="submit" class="btn btn-primary btn-lg">Adicionar Curso</button>
+        <button type="submit" class="btn btn-primary btn-lg">Salvar Alterações</button>
       </form>
     </div>
   </div>
