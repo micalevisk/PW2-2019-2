@@ -1,3 +1,4 @@
+<meta name="csrf-token" content="{{csrfToken}}">
 <div class="curso__index">
 
   <div class="row">
@@ -6,7 +7,7 @@
     </div>
     <div class="col-4">
       <div class="float-right mt-2">
-        <a class="btn btn-primary" href="/curso/create"><i class="fas fa-plus"></i>&nbsp;Adicionar</a>
+        <a class="btn btn-primary" href="/cursos/create"><i class="fas fa-plus"></i>&nbsp;Adicionar</a>
       </div>
     </div>
   </div>
@@ -20,18 +21,44 @@
       </tr>
     </thead>
     <tbody>
-      {{#each cursos}}
-      <tr class="table-dark">
-        <td>{{initials}}</td>
-        <td>{{name}}</td>
+      {{#each cursos as |curso|}}
+      <tr class="table-dark" id="row-curso-{{curso.id}}">
+        <th scope="row">{{curso.initials}}</th>
+        <td>{{curso.name}}</td>
         <td class="text-right">
-          <a href="/curso/read/{{id}}"><i class="fas fa-eye" aria-hidden="true"></i></a>
-          <a href="/curso/update/{{id}}"><i class="fa fa-pencil-alt" aria-hidden="true"></i></a>
-          <a href="/curso/remove/{{id}}"><i class="fas fa-trash" aria-hidden="true"></i></a>
+          <a href="/cursos/read/{{curso.id}}" data-toggle="tooltip" data-placement="top" title="Visualizar">
+            <i class="fas fa-eye"></i></a>
+          <a href="/cursos/update/{{curso.id}}" data-toggle="tooltip" data-placement="bottom" title="Atualizar">
+            <i class="fa fa-pencil-alt"></i></a>
+          <a href="#" data-toggle="tooltip" data-placement="right" title="Apagar"
+            class="delete-curso" data-curso-id="{{curso.id}}" data-curso-name="{{curso.name}}">
+            <i class="fas fa-trash-alt"></i></a>
         </td>
       </tr>
       {{/each}}
     </tbody>
   </table>
 
+  <div class="modal fade" id="modal-delete">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Apagar Curso</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true"><i class="fas fa-times"></i></span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Deseja mesmo apagar o curso <span id="curso-name" class="font-weight-bold"></span>?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="delete-curso-confirma">Sim</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
+
+<script src="/js/curso/index.js"></script>

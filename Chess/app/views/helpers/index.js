@@ -1,24 +1,53 @@
-module.exports = {
-  toUpper: (str) => str.toUpperCase(),
+/* eslint-disable no-restricted-syntax */
 
-  checked: (idArea, radioBtnId) => (idArea === radioBtnId) && 'checked',
+module.exports = {
+
+  // ████████╗███████╗██╗  ██╗████████╗
+  // ╚══██╔══╝██╔════╝╚██╗██╔╝╚══██╔══╝
+  //    ██║   █████╗   ╚███╔╝    ██║
+  //    ██║   ██╔══╝   ██╔██╗    ██║
+  //    ██║   ███████╗██╔╝ ██╗   ██║
+  //    ╚═╝   ╚══════╝╚═╝  ╚═╝   ╚═╝
+
+  toUpper: (str) => (str || '').toUpperCase(),
+
+
+  // ██╗  ██╗████████╗███╗   ███╗██╗
+  // ██║  ██║╚══██╔══╝████╗ ████║██║
+  // ███████║   ██║   ██╔████╔██║██║
+  // ██╔══██║   ██║   ██║╚██╔╝██║██║
+  // ██║  ██║   ██║   ██║ ╚═╝ ██║███████╗
+  // ╚═╝  ╚═╝   ╚═╝   ╚═╝     ╚═╝╚══════╝
+
+  checked: (idArea, radioBtnId) => (idArea === radioBtnId ? 'checked' : ''),
 
   hasError: (errors, fieldName) => {
     if (errors) {
-      const relativeError = errors.find((error) => error.path === fieldName);
-
-      if (relativeError) {
-        return 'is-invalid';
+      for (const error of errors) {
+        if (error.path === fieldName) {
+          return 'is-invalid'; // CSS class name from Bootswatch.
+        }
       }
     }
 
     return '';
   },
 
-  getErrorForField: (errors, fieldName) => {
+
+  // ██████╗ ████████╗██╗  ██╗███████╗██████╗ ███████╗
+  // ██╔═══██╗╚══██╔══╝██║  ██║██╔════╝██╔══██╗██╔════╝
+  // ██║   ██║   ██║   ███████║█████╗  ██████╔╝███████╗
+  // ██║   ██║   ██║   ██╔══██║██╔══╝  ██╔══██╗╚════██║
+  // ╚██████╔╝   ██║   ██║  ██║███████╗██║  ██║███████║
+  //  ╚═════╝    ╚═╝   ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚══════╝
+
+  getErrorMsg: (errors, fieldName) => {
     if (errors) {
-      const relativeError = errors.find((error) => error.path === fieldName);
-      return relativeError.message;
+      for (const error of errors) {
+        if (error.path === fieldName) {
+          return error.message;
+        }
+      }
     }
 
     return '';

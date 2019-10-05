@@ -6,34 +6,37 @@
     </div>
     <div class="col-4">
       <div class="float-right mt-4">
-        <a class="btn btn-secondary" href="/curso"><i class="fas fa-arrow-left"></i> Voltar</a>
+        <a class="btn btn-danger" href="/cursos"><i class="fas fa-times"></i>&nbsp;Cancelar</a>
       </div>
     </div>
   </div>
 
   <div class="row">
     <div class="col-8">
-      <form action="/curso/update/{{curso.id}}" method="POST">
+      <form action="/cursos/update/{{curso.id}}" method="POST">
 
+        {{!-- FORM --}}
         <div class="form-group">
           <label for="initials">Sigla</label>
-          <input class="form-control" type="text" name="initials" id="initials" placeholder="Informe a sigla do curso"
-            value="{{curso.initials}}" required>
-          <small class="form-text text-muted">Em caso de dúvida, consulte o <a href="https://ufam.edu.br" rel="noopener"
-              target="_blank">site da UFAM</a>.</small>
+          <input class="form-control {{hasError errors "initials"}}" type="text" name="initials" id="initials"
+            placeholder="Informe a sigla do curso" value="{{curso.initials}}" required>
+          <div class="invalid-feedback">{{getErrorMsg errors "initials"}}</div>
+          <small class="form-text text-muted">Em caso de dúvida, consulte o <a href="https://ufam.edu.br" tabindex="-1"
+              rel="noopener" target="_blank">site da UFAM</a>.</small>
         </div>
 
         <div class="form-group">
           <label for="name">Nome</label>
           <input class="form-control {{hasError errors "name"}}" type="text" name="name" id="name"
             placeholder="Informe o nome do curso" value="{{curso.name}}" required>
-          <div class="invalid-feedback">{{getErrorForField errors "name"}}</div>
+          <div class="invalid-feedback">{{getErrorMsg errors "name"}}</div>
         </div>
 
         <div class="form-group">
           <label for="description">Descrição do curso</label>
-          <textarea class="form-control" name="description" id="description" rows="3"
+          <textarea class="form-control {{hasError errors "description"}}" name="description" id="description" rows="2"
             required>{{curso.description}}</textarea>
+          <div class="invalid-feedback">{{getErrorMsg errors "description"}}</div>
         </div>
 
         <fieldset class="form-group">
@@ -41,25 +44,26 @@
           <div class="form-check">
             <label class="form-check-label">
               <input type="radio" class="form-check-input" name="id_area" id="area" value="1"
-                {{checked curso.id_area 1}} required>
+                {{checked curso.id_area '1'}} required>
               Ciências Exatas &mdash; Computação, engenharias, matemática, estatística, etc.
             </label>
           </div>
           <div class="form-check">
             <label class="form-check-label">
               <input type="radio" class="form-check-input" name="id_area" id="area" value="2"
-                {{checked curso.id_area 2}} required>
+                {{checked curso.id_area '2'}} required>
               Ciências Humanas &mdash; Letras, psicologia, história, geografia, etc.
             </label>
           </div>
           <div class="form-check">
             <label class="form-check-label">
               <input type="radio" class="form-check-input" name="id_area" id="area" value="3"
-                {{checked curso.id_area 3}} required>
+                {{checked curso.id_area '3'}} required>
               Ciências Biológicas &mdash; medicina, odontologia, biologia, agrária, etc.
             </label>
           </div>
         </fieldset>
+        {{!-- FORM --}}
 
         <button type="submit" class="btn btn-primary btn-lg">Salvar Alterações</button>
       </form>

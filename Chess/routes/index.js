@@ -1,5 +1,11 @@
 /* eslint-disable no-multi-spaces */
+const csrf = require('csurf');
 const { Router } = require('express');
+
+/**
+ * Setup route middlewares.
+ */
+const csrfProtection = csrf({ cookie: true });
 
 const router = Router();
 
@@ -12,13 +18,12 @@ router.get('/ui',                mainController.ui);
 router.get(['/sobre', '/about'], mainController.about);
 
 /* ==== Curso Controler ==== */
-router.get('/curso',             cursoController.index);
-router.get('/curso/create',      cursoController.create); // show form
-router.post('/curso/create',     cursoController.create);
-router.get('/curso/update/:id',  cursoController.update); // show form
-router.post('/curso/update/:id',  cursoController.update);
-router.get('/curso/read/:id',    cursoController.read);
-router.get('/curso/remove/:id',  cursoController.remove);
-router.post('/curso/remove/:id', cursoController.remove);
+router.get('/cursos',             csrfProtection, cursoController.index);
+router.get('/cursos/create',      cursoController.create); // show form
+router.post('/cursos/create',     cursoController.create);
+router.get('/cursos/update/:id',  cursoController.update); // show form
+router.post('/cursos/update/:id', cursoController.update);
+router.get('/cursos/read/:id',    cursoController.read);
+router.delete('/cursos/remove',   csrfProtection, cursoController.remove);
 
 module.exports = router;

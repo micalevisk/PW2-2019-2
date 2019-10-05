@@ -2,13 +2,19 @@
 //       então qualquer acesso de prop direto deve ter um fallback
 
 const models = require('../models');
+
+const { ValidationError } = models.Sequelize;
 const { wrapAsync } = require('../../lib/utils');
 
 const { curso: Curso } = models;
 
 async function index(req, res) {
   const cursos = await Curso.findAll();
-  res.render('curso/index', { page: 'Cursos', cursos });
+  res.render('curso/index', {
+    page: 'Cursos',
+    csrfToken: req.csrfToken(),
+    cursos,
+  });
 }
 
 async function create(req, res) {
@@ -24,14 +30,28 @@ async function create(req, res) {
       id_area: idArea,
     } = req.body;
 
-    await Curso.create({
+    const curso = {
       initials,
       name,
       description,
-      id_area: idArea,
-    });
+      idArea,
+    };
 
-    return res.redirect('/curso');
+    try {
+      await Curso.create(curso);
+    } catch (err) {
+      if (err instanceof ValidationError) {
+        return res.render('curso/create', {
+          page: 'Adicionar Curso',
+          curso,
+          errors: err.errors,
+        });
+      }
+
+      throw err;
+    }
+
+    return res.redirect('/cursos');
   }
 
   return res.end();
@@ -67,7 +87,7 @@ async function update(req, res) {
 
     try {
       await cursoRow.save();
-      return res.redirect('/curso');
+      return res.redirect('/cursos');
     } catch (err) {
       return res.render('curso/update', {
         page: 'Editar Curso',
@@ -81,16 +101,20 @@ async function update(req, res) {
 }
 
 async function remove(req, res) {
-  const { id } = req.params;
-  const cursoRow = await Curso.findByPk(id);
-
   if (req.route.methods.get) {
-    return res.render('curso/remove', { curso: cursoRow.dataValues });
+    const { id } = req.params;
+    const cursoRow = await Curso.findByPk(id);
+
+    return res.render('curso/remove', {
+      page: 'Apagar Curso',
+      curso: cursoRow.dataValues,
+    });
   }
 
-  if (req.route.methods.post) {
-    await Curso.destroy({ where: { id: req.body.id } });
-    return res.redirect('/curso');
+  if (req.route.methods.delete) {
+    const { id } = req.body;
+    await Curso.destroy({ where: { id } });
+    return res.send(`curso de id ${id} removido!`);
   }
 
   return res.end();
