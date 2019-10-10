@@ -12,7 +12,8 @@
     "debug": "DEBUG=chess:* nodemon --nolazy --inspect-brk=9229 .",
     "db:migrate-status": "npx sequelize-cli db:migrate:status",
     "db:migrate": "npx sequelize-cli db:migrate",
-    "db:seed-all": "npx sequelize-cli db:seed:all"
+    "db:seed-all": "npx sequelize-cli db:seed:all",
+    "db:seed-undo": "npx sequelize-cli db:seed:undo:all"
   },
   "author": "Micael Levi <mykael2010@hotmail.com>",
   "license": "MIT",
