@@ -57,7 +57,9 @@ module.exports = (sequelize, DataTypes) => {
     }
   });
   curso.associate = function(models) {
-    // associations can be defined here
+    curso.belongsTo(models.area, {
+      foreignKey: 'id_area',
+    });
   };
   return curso;
 };

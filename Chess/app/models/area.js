@@ -7,7 +7,9 @@ module.exports = (sequelize, DataTypes) => {
     freezeTableName: true,
   });
   area.associate = function(models) {
-    // associations can be defined here
+    area.hasOne(models.curso, {
+      foreignKey: 'id_area',
+    });
   };
   return area;
 };

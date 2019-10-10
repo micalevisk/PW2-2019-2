@@ -6,7 +6,7 @@ const models = require('../models');
 const { ValidationError } = models.Sequelize;
 const { wrapAsync } = require('../../lib/utils');
 
-const { curso: Curso } = models;
+const { curso: Curso, area: Area } = models;
 
 async function index(req, res) {
   const cursos = await Curso.findAll();
@@ -19,9 +19,13 @@ async function index(req, res) {
 
 async function create(req, res) {
   if (req.route.methods.get) {
-    return res.render('curso/create', { page: 'Adicionar Curso' });
+    return res.render('curso/create', {
+      page: 'Adicionar Curso',
+      csrfToken: req.csrfToken(),
+    });
   }
 
+  // TODO: caputar ForbiddenError
   if (req.route.methods.post) {
     const {
       initials,
@@ -59,8 +63,12 @@ async function create(req, res) {
 
 async function read(req, res) {
   const { id } = req.params;
-  // TODO: fetch value of attribute `id_area`
-  const cursoRow = await Curso.findOne({ where: { id } });
+  const cursoRow = await Curso.findByPk(id, {
+    include: {
+      model: Area,
+      as: 'area',
+    },
+  });
 
   res.render('curso/read', {
     page: 'Editar Curso',

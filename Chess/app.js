@@ -2,6 +2,7 @@ const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+const csrf = require('csurf');
 const logger = require('morgan');
 const handlebars = require('express-handlebars');
 const sass = require('node-sass-middleware');
@@ -19,7 +20,7 @@ const app = express();
 app.disable('x-powered-by');
 
 app.engine('hbs', handlebars({
-  layoutsDir: path.join(__dirname, '/app/views/layouts'),
+  layoutsDir: path.join(__dirname, 'app', 'views', 'layouts'),
   defaultLayout: 'main',
   extname: '.hbs',
   helpers: viewsHelpers,
@@ -41,6 +42,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use(cookieParser());
+
+app.use(csrf({ cookie: true }));
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/js', [

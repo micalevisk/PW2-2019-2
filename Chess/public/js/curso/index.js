@@ -37,5 +37,8 @@ $('#delete-curso-confirma').click(function onClickConfirmDelete() {
       $(`#row-curso-${id}`).remove();
       console.info(data);
     },
+    error(err) {
+      // TODO: caputar ForbiddenError
+    }
   });
 });
