@@ -8,8 +8,7 @@
   "homepage": "https://github.com/micalevisk/ProgWeb2.git",
   "scripts": {
     "requirements-check": "node ./check-node-version.js",
-    "postinstall": "npm install --prefix Chess",
-    "nvm:use": "nvm use"
+    "postinstall": "npm install --prefix Chess"
   },
   "repository": {
     "type": "git",
