@@ -1,6 +1,3 @@
-// TODO: os objs `rows` podem ser `undefined`,
-//       então qualquer acesso de prop direto deve ter um fallback
-
 const models = require('../models');
 
 const { ValidationError } = models.Sequelize;
@@ -25,7 +22,6 @@ async function create(req, res) {
     });
   }
 
-  // TODO: caputar ForbiddenError
   if (req.route.methods.post) {
     const {
       initials,
@@ -61,7 +57,7 @@ async function create(req, res) {
   return res.end();
 }
 
-async function read(req, res) {
+async function read(req, res, next) {
   const { id } = req.params;
   const cursoRow = await Curso.findByPk(id, {
     include: {
@@ -70,15 +66,23 @@ async function read(req, res) {
     },
   });
 
-  res.render('curso/read', {
+  if (!cursoRow) {
+    return next();
+  }
+
+  return res.render('curso/read', {
     page: 'Editar Curso',
     curso: cursoRow.dataValues,
   });
 }
 
-async function update(req, res) {
+async function update(req, res, next) {
   const { id } = req.params;
   const cursoRow = await Curso.findByPk(id);
+
+  if (!cursoRow) {
+    return next();
+  }
 
   if (req.route.methods.get) {
     return res.render('curso/update', {
@@ -108,10 +112,14 @@ async function update(req, res) {
   return res.end();
 }
 
-async function remove(req, res) {
+async function remove(req, res, next) {
   if (req.route.methods.get) {
     const { id } = req.params;
     const cursoRow = await Curso.findByPk(id);
+
+    if (!cursoRow) {
+      return next();
+    }
 
     return res.render('curso/remove', {
       page: 'Apagar Curso',

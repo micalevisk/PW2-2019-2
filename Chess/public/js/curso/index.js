@@ -1,5 +1,5 @@
 /* eslint-env browser, jquery */
-/* eslint-disable prefer-arrow-callback */
+/* eslint-disable prefer-arrow-callback, no-alert */
 
 /**
  * Initialize all tooltips on a page.
@@ -20,8 +20,9 @@ $('.delete-curso').click(function onClickDelete() {
 });
 
 $('#delete-curso-confirma').click(function onClickConfirmDelete() {
-  const id = $('#delete-curso-confirma').data('id');
   const csrfToken = $('meta[name="csrf-token"]').attr('content');
+  const id = $('#delete-curso-confirma').data('id');
+  const hideModal = () => $('#modal-delete').modal('hide');
 
   $.ajax({
     method: 'DELETE',
@@ -33,12 +34,18 @@ $('#delete-curso-confirma').click(function onClickConfirmDelete() {
       id,
     },
     success(data) {
-      $('#modal-delete').modal('hide');
-      $(`#row-curso-${id}`).remove();
       console.info(data);
+      $(`#row-curso-${id}`).remove();
+      hideModal();
     },
-    error(err) {
-      // TODO: caputar ForbiddenError
-    }
+    error(jqXHR, textStatus) {
+      console.error(textStatus, jqXHR);
+    },
+    statusCode: {
+      403() {
+        hideModal();
+        alert('Acesso negado, CSRF Token inválido!');
+      },
+    },
   });
 });

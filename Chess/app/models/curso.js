@@ -15,6 +15,10 @@ module.exports = (sequelize, DataTypes) => {
           args: true,
           msg: 'Apenas números e letras de A a Z são permitidos!'
         },
+        len: {
+          args: [3, 8],
+          msg: 'A sigla deve ter entre 3 a 8 caracteres!'
+        }
       }
     },
     name: {

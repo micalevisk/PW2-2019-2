@@ -41,10 +41,6 @@ app.use(express.json());
 
 app.use(express.urlencoded({ extended: false }));
 
-app.use(cookieParser());
-
-app.use(csrf({ cookie: true }));
-
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/js', [
   express.static(path.join(__dirname, '/node_modules/jquery/dist')),
@@ -62,6 +58,9 @@ app.use(sass({
   outputStyle: 'compressed',
 }));
 
+app.use(cookieParser());
+
+app.use(csrf({ cookie: true }));
 
 /**
  * Routes
@@ -80,14 +79,19 @@ app.use((req, res, next) => {
 
 // error handler middleware
 app.use((err, req, res, next) => {
+  err.status = err.status || 500;
+
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  err.status = err.status || 500;
   res.status(err.status);
-  res.render('error', { error: err });
+
+  // If CSRF token validation fails
+  if (err.code === 'EBADCSRFTOKEN') {
+    return res.end('Invalid CSRF Token!');
+  }
+
+  return res.render('error', { error: err });
 });
 
 module.exports = app;
