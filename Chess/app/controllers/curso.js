@@ -39,6 +39,7 @@ async function create(req, res) {
 
     try {
       await Curso.create(curso);
+      return res.redirect('/cursos');
     } catch (err) {
       if (err instanceof ValidationError) {
         return res.render('curso/create', {
@@ -50,8 +51,6 @@ async function create(req, res) {
 
       throw err;
     }
-
-    return res.redirect('/cursos');
   }
 
   return res.end();
