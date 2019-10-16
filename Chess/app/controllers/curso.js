@@ -44,6 +44,7 @@ async function create(req, res) {
       if (err instanceof ValidationError) {
         return res.render('curso/create', {
           page: 'Adicionar Curso',
+          csrfToken: req.csrfToken(),
           curso,
           errors: err.errors,
         });
