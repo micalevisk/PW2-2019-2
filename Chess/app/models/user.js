@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
       validate: {
         notEmpty: true,
         len: {
-          Args: [3, 50],
+          args: [3, 50],
           msg: 'O nome precisa ter de 3 a 50 caracteres'
         }
       }

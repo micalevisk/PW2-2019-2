@@ -27,25 +27,25 @@ async function create(req, res) {
       initials,
       name,
       description,
-      id_area: idArea,
+      idArea,
     } = req.body;
 
-    const curso = {
+    const newCursoData = {
       initials,
       name,
       description,
-      idArea,
+      id_area: idArea,
     };
 
     try {
-      await Curso.create(curso);
+      await Curso.create(newCursoData);
       return res.redirect('/cursos');
     } catch (err) {
       if (err instanceof ValidationError) {
         return res.render('curso/create', {
           page: 'Adicionar Curso',
           csrfToken: req.csrfToken(),
-          curso,
+          curso: newCursoData,
           errors: err.errors,
         });
       }

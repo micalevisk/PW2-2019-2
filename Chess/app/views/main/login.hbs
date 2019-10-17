@@ -1,0 +1,40 @@
+<div class="main__login">
+
+  <div class="row">
+    <div class="col">
+      <h1>Acesse sua Conta</h1>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-6">
+      <form action="/login" method="POST">
+        {{!-- //TODO: validar os dados --}}
+
+        <div class="form-group">
+          <label for="email">Seu Endereço de E-mail</label>
+          <input class="form-control {{hasError errors "email"}}" type="email" name="email" id="email"
+            placeholder="joao_byte@exemplo.com" value="{{user.email}}" autofocus required>
+          <div class="invalid-feedback">{{getErrorMsg errors "email"}}</div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Sua Senha</label>
+          <input type="password" class="form-control" name="password" id="password"
+            placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" required>
+        </div>
+
+        <div class="custom-control custom-switch">
+          <input type="checkbox" class="custom-control-input" id="remmber">
+          <label class="custom-control-label" for="remmber">Matenha-me conectado.</label>
+        </div>
+
+        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+        <button type="submit" class="btn btn-dark btn-lg btn-block mt-4">Acessar</button>
+      </form>
+    </div>
+  </div>
+
+  {{!-- //TODO: modal com os termos de serviços --}}
+
+</div>

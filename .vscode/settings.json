@@ -34,7 +34,7 @@
     "files.trimTrailingWhitespace": true,
     "files.associations": {
         "*.make": "makefile",
-        "*.bats": "shellscript"
+        "*.bats": "shellscript",
     },
     "files.exclude": {
         "**/.git": true,

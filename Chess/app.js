@@ -6,6 +6,8 @@ const csrf = require('csurf');
 const logger = require('morgan');
 const handlebars = require('express-handlebars');
 const sass = require('node-sass-middleware');
+const uuid = require('uuid/v4');
+const session = require('express-session');
 const viewsHelpers = require('./app/views/helpers');
 
 const indexRouter = require('./routes');
@@ -35,8 +37,6 @@ app.set('views', path.join(__dirname, 'app', 'views'));
 
 app.use(express.urlencoded({ extended: false }));
 
-app.use(logger('tiny'));
-
 app.use(express.json());
 
 app.use(express.urlencoded({ extended: false }));
@@ -62,6 +62,16 @@ app.use(cookieParser());
 
 app.use(csrf({ cookie: true }));
 
+app.use(session({
+  genid: () => uuid(), // Generate the SESSID
+  secret: 'ZghOT0eRm4U9s:p/q2-q4!', // (chess move in descriptive notation)
+  resave: true,
+  saveUninitialized: true,
+  name: 'sid',
+}));
+
+app.use(logger('common'));
+
 /**
  * Routes
  */
@@ -81,7 +91,7 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
   err.status = err.status || 500;
 
-  // set locals, only providing error in development
+  // set locals, only providing error details in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
   res.status(err.status);
@@ -91,7 +101,7 @@ app.use((err, req, res, next) => {
     return res.end('Invalid CSRF Token!');
   }
 
-  return res.render('error', { error: err });
+  return res.render('error');
 });
 
 module.exports = app;

@@ -42,5 +42,6 @@ module.exports = {
 
   down: (queryInterface, Sequelize) => {
     // TODO:
+    return Promise.resolve();
   }
 };

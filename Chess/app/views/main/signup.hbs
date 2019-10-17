@@ -1,0 +1,64 @@
+<div class="main__signup">
+
+  <div class="row">
+    <div class="col">
+      <h1 class="heading-primary">Cadastro de Usuário</h1>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-6">
+      <form action="/signup" method="POST">
+        {{!-- //TODO: validar os dados --}}
+
+        <div class="form-group">
+          <label for="name">Nome Completo</label>
+          <input class="form-control {{hasError errors "name"}}" type="text" name="name" id="name"
+            placeholder="Informe seu nome completo" value="{{user.name}}" autofocus required>
+          <div class="invalid-feedback">{{getErrorMsg errors "name"}}</div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Endereço de E-mail</label>
+          <input class="form-control {{hasError errors "email"}}" type="email" name="email" id="email"
+            placeholder="joao_byte@exemplo.com" value="{{user.email}}" required>
+          <div class="invalid-feedback">{{getErrorMsg errors "email"}}</div>
+        </div>
+
+        <div class="form-group">
+          <select class="custom-select" name="idCurso" id="idCurso" required>
+            <option value="">Informe seu curso na UFAM</option>
+            {{#each cursos as |curso|}}
+            <option value="{{curso.id}}" {{selected curso.id user.id_curso}}>{{curso.name}}</option>
+            {{/each}}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Sua Senha</label>
+          <input class="form-control {{hasError errors "password"}}" type="password" name="password" id="password"
+            placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" required>
+          <div class="invalid-feedback">{{getErrorMsg errors "password"}}</div>
+        </div>
+
+        <div class="form-group">
+          <label for="confirm">Confirme sua Senha</label>
+          <input type="password" class="form-control" id="confirm"
+            placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" required>
+        </div>
+
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" class="custom-control-input" id="termos" required>
+          <label class="custom-control-label" for="termos">Eu li e concordo com os <a href="#" data-toggle="modal"
+              data-target="#modal-termos">termos de serviço</a>.</label>
+        </div>
+
+        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+        <button type="submit" class="btn btn-primary btn-lg btn-block mt-4">Criar Conta</button>
+      </form>
+    </div>
+  </div>
+
+  {{!-- //TODO: modal com os termos de serviços --}}
+
+</div>
