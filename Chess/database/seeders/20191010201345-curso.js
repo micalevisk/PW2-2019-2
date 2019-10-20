@@ -30,6 +30,15 @@ module.exports = {
           created_at: new Date(),
           updated_at: new Date(),
         },
+        {
+          id: 4,
+          initials: 'IT16',
+          name: 'Engenharia de Software',
+          description: 'O Curso de Bacharelado em Engenharia de Software visa desenvolver um profissional comprometido com a aplicação das soluções nas organizações administrativas no que concerne aos problemas.',
+          id_area: 1,
+          created_at: new Date(),
+          updated_at: new Date(),
+        },
     ], {});
   },
 

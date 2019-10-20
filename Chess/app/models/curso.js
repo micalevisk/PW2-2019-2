@@ -43,6 +43,10 @@ module.exports = (sequelize, DataTypes) => {
           arg: true,
           msg: 'Este campo não pode estar vazio!'
         },
+        len: {
+          args: [6, 250],
+          msg: 'Este campo deve ter entre 6 a 250 caracteres!'
+        },
       }
     },
     id_area: DataTypes.INTEGER

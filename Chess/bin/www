@@ -1,14 +1,5 @@
 #!/usr/bin/env node
-
-/**
- * Load environment variables.
- * NOTE: Do not move this statement down.
- */
-require('dotenv-safe').config({
-  allowEmptyValues: false,
-  example: process.env.NODE_ENV === 'production' ? '.env.prod.example' : '.env.example',
-  path: process.env.NODE_ENV === 'development' ? '.env.dev' : '.env'
-});
+require('./loadEnvs');
 
 const debug = require('debug')('chess:server');
 const http = require('http');
