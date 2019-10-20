@@ -1,4 +1,3 @@
-## Arquivos gerados pelo Sequelize
-Chess/app/models
-Chess/database
-Chess/bin
+## Arquivos gerados pelo sequelize-cli
+Chess/app/models/
+Chess/database/

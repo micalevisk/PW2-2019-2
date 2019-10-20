@@ -3,8 +3,8 @@ const { Router } = require('express');
 
 const router = Router();
 
-const mainController = require('../app/controllers/main');
 const cursoController = require('../app/controllers/curso');
+const mainController = require('../app/controllers/main');
 
 router.use((req, res, next) => {
   res.locals.isLogged = !!req.session.uid;

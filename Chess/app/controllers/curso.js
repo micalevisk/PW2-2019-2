@@ -1,7 +1,7 @@
+const { wrapAsync } = require('../../lib/utils');
 const models = require('../models');
 
 const { ValidationError } = models.Sequelize;
-const { wrapAsync } = require('../../lib/utils');
 
 const { curso: Curso, area: Area } = models;
 

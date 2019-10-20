@@ -11,17 +11,16 @@
     "editor.renderWhitespace": "all",
     "editor.useTabStops": false,
     "editor.fontSize": 13,
-    "[java]": {
-        "editor.tabSize": 4
-    },
+    "editor.minimap.enabled": false,
+    "editor.suggestSelection": "first",
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~//
     //         WORKBENCH        //
     //~~~~~~~~~~~~~~~~~~~~~~~~~~//
     "workbench.activityBar.visible": true,
     "workbench.colorCustomizations": {
-        "editorWhitespace.foreground": "#282c34",
-        "gitDecoration.ignoredResourceForeground": "#73737a"
+      "editorWhitespace.foreground": "#282c34",
+      "gitDecoration.ignoredResourceForeground": "#73737a"
     },
     "workbench.settings.enableNaturalLanguageSearch": false,
     "workbench.enableExperiments": false,
@@ -33,24 +32,22 @@
     "files.trimFinalNewlines": true,
     "files.trimTrailingWhitespace": true,
     "files.associations": {
-        "*.make": "makefile",
-        "*.bats": "shellscript",
+      "*.make": "makefile",
+      "*.bats": "shellscript",
     },
     "files.exclude": {
-        "**/.git": true,
-        "**/.svn": true,
-        "**/.hg": true,
-        "**/CVS": true,
-        "**/.DS_Store": true,
-        "**/*.swp": true
+      "**/.git": true,
+      "**/.svn": true,
+      "**/.hg": true,
+      "**/CVS": true,
+      "**/.DS_Store": true,
+      "**/*.swp": true
     },
-
 
     //~~~~~~~~~~~~~~~~~~~~~~~//
     //        WINDOW         //
     //~~~~~~~~~~~~~~~~~~~~~~~//
     "window.zoomLevel": -1,
-
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~//
     //         EXPLORER         //
@@ -58,30 +55,25 @@
     "explorer.confirmDragAndDrop": false,
     "explorer.autoReveal": false,
 
-
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~//
     //        EXTENSIONS         //
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~//
     "extensions.ignoreRecommendations": false,
-
 
     //~~~~~~~~~~~~~~~~~~~~~~~//
     //        OTHERS         //
     //~~~~~~~~~~~~~~~~~~~~~~~//
     "git.confirmSync": false,
     "git.autofetch": true,
-
-    "java.errors.incompleteClasspath.severity": "ignore",
-
-    "java.home": "/usr/lib/jvm/java-8-openjdk-amd64",
-
-    "editor.suggestSelection": "first",
+    "git.ignoreLimitWarning": true,
 
     "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
 
     "eslint.autoFixOnSave": true,
-    "editor.minimap.enabled": false,
-    "git.ignoreLimitWarning": true,
+    "eslint.validate": [
+      "javascript",
+      { "autoFix": true }
+    ],
 
     "debug.node.autoAttach": "on"
 }

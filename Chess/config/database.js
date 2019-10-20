@@ -1,5 +1,4 @@
 require('../bin/loadEnvs');
-console.log(process.env.DB_HOST)
 
 // Usando o https://remotemysql.com
 module.exports = {
@@ -28,4 +27,3 @@ module.exports = {
     dialect: 'mysql',
   },
 };
-

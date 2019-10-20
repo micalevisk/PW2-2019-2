@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 
+const isProduction = (process.env.NODE_ENV === 'production');
+const isDevelopment = (process.env.NODE_ENV === 'development');
+
 /**
  * Load environment variables.
  */
 require('dotenv-safe').config({
   allowEmptyValues: false,
-  example: process.env.NODE_ENV === 'production' ? '.env.prod.example' : '.env.example',
-  path: process.env.NODE_ENV === 'development' ? '.env.dev' : '.env'
+  example: isProduction ? '.env.prod.example' : '.env.example',
+  path: isDevelopment ? '.env.dev' : '.env',
 });
-

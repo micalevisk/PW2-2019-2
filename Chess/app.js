@@ -1,15 +1,15 @@
-const createError = require('http-errors');
-const express = require('express');
-const path = require('path');
 const cookieParser = require('cookie-parser');
 const csrf = require('csurf');
-const logger = require('morgan');
+const express = require('express');
 const handlebars = require('express-handlebars');
-const sass = require('node-sass-middleware');
-const uuid = require('uuid/v4');
 const session = require('express-session');
-const viewsHelpers = require('./app/views/helpers');
+const createError = require('http-errors');
+const logger = require('morgan');
+const sass = require('node-sass-middleware');
+const path = require('path');
+const uuid = require('uuid/v4');
 
+const viewsHelpers = require('./app/views/helpers');
 const indexRouter = require('./routes');
 
 const app = express();

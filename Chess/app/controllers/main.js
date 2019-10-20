@@ -1,9 +1,10 @@
 const bcrypt = require('bcryptjs');
-const models = require('../models');
+
 const config = require('../../config/config.json');
+const { wrapAsync } = require('../../lib/utils');
+const models = require('../models');
 
 const { ValidationError, ValidationErrorItem } = models.Sequelize;
-const { wrapAsync } = require('../../lib/utils');
 
 const { curso: Curso, user: User } = models;
 
