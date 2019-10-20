@@ -87,6 +87,7 @@ async function update(req, res, next) {
   if (req.route.methods.get) {
     return res.render('curso/update', {
       page: 'Editar Curso',
+      csrfToken: req.csrfToken(),
       curso: cursoRow.dataValues,
     });
   }
@@ -103,6 +104,7 @@ async function update(req, res, next) {
     } catch (err) {
       return res.render('curso/update', {
         page: 'Editar Curso',
+        csrfToken: req.csrfToken(),
         curso: cursoRow.dataValues,
         errors: err.errors,
       });

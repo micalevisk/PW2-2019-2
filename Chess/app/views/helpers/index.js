@@ -19,13 +19,9 @@ module.exports = {
   // ██║  ██║   ██║   ██║ ╚═╝ ██║███████╗
   // ╚═╝  ╚═╝   ╚═╝   ╚═╝     ╚═╝╚══════╝
 
-  checked: (refId, radioBtnId) => (refId === radioBtnId ? 'checked' : ''),
+  checked: (refVal, optionVal = '') => (refVal.toString() === optionVal.toString() ? 'checked' : ''),
 
-  selected: (refId, optionId) => {
-    console.log(refId, optionId); // FIXME: está dando number, undefined
-
-    return (refId === optionId ? 'selected' : '');
-  },
+  selected: (refVal, optionVal = '') => (refVal.toString() === optionVal.toString() ? 'selected' : ''),
 
   hasError: (errors, fieldName) => {
     if (errors) {
