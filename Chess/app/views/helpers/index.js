@@ -19,9 +19,9 @@ module.exports = {
   // ██║  ██║   ██║   ██║ ╚═╝ ██║███████╗
   // ╚═╝  ╚═╝   ╚═╝   ╚═╝     ╚═╝╚══════╝
 
-  checked: (refVal, optionVal = '') => (refVal.toString() === optionVal.toString() ? 'checked' : ''),
+  checked: (refVal = '', optionVal = '') => (refVal.toString() === optionVal.toString() ? 'checked' : ''),
 
-  selected: (refVal, optionVal = '') => (refVal.toString() === optionVal.toString() ? 'selected' : ''),
+  selected: (refVal = '', optionVal = '') => (refVal.toString() === optionVal.toString() ? 'selected' : ''),
 
   hasError: (errors, fieldName) => {
     if (errors) {

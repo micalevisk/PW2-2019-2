@@ -1,5 +1,7 @@
 const { Model, DataTypes } = require('sequelize');
 
+const { capitalize } = require('../../lib/utils');
+
 class Area extends Model {
   static init(sequelize) {
     super.init({
@@ -11,6 +13,11 @@ class Area extends Model {
       modelName: 'area',
       freezeTableName: true,
       underscored: true,
+      hooks: {
+        beforeSave(area) {
+          area.name = capitalize(area.name);
+        },
+      },
     });
   }
 

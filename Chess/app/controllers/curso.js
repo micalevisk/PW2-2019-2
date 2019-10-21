@@ -16,10 +16,13 @@ async function index(req, res) {
 }
 
 async function create(req, res) {
+  const areas = await Area.findAll();
+
   if (req.route.methods.get) {
     return res.render('curso/create', {
       page: 'Adicionar Curso',
       csrfToken: req.csrfToken(),
+      areas,
     });
   }
 
@@ -46,6 +49,7 @@ async function create(req, res) {
         return res.render('curso/create', {
           page: 'Adicionar Curso',
           csrfToken: req.csrfToken(),
+          areas,
           curso: newCursoData,
           errors: err.errors,
         });
@@ -85,11 +89,14 @@ async function update(req, res, next) {
     return next();
   }
 
+  const areas = await Area.findAll();
+
   if (req.route.methods.get) {
     return res.render('curso/update', {
       page: 'Editar Curso',
       csrfToken: req.csrfToken(),
       curso: cursoRow.dataValues,
+      areas,
     });
   }
 
@@ -107,6 +114,7 @@ async function update(req, res, next) {
         page: 'Editar Curso',
         csrfToken: req.csrfToken(),
         curso: cursoRow.dataValues,
+        areas,
         errors: err.errors,
       });
     }

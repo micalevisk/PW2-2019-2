@@ -5,7 +5,7 @@ module.exports = {
       return queryInterface.bulkInsert('area', [
         {
           id: 1,
-          name: 'Ciências Exatas',
+          name: 'Ciências Exatas e da Terra',
           created_at: new Date(),
           updated_at: new Date(),
         },
