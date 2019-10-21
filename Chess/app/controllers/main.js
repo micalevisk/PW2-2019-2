@@ -3,7 +3,8 @@ const models = require('../models');
 
 const { ValidationError, ValidationErrorItem } = models.Sequelize;
 
-const { curso: Curso, user: User } = models;
+const { Curso, User } = models;
+
 
 function index(req, res) {
   res.render('main/index');
@@ -77,7 +78,7 @@ async function login(req, res) {
     return res.redirect('/');
   }
 
-  const { email, password, remember } = req.body;
+  const { email, password /* remember */ } = req.body;
   const userData = {
     email,
     password,

@@ -18,5 +18,13 @@
         }
       }
     ]
-  }
+  },
+  "overrides": [
+    {
+      "files": ["Chess/app/models/*.js"],
+      "rules": {
+        "no-param-reassign": "off"
+      }
+    }
+  ]
 }

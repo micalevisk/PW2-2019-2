@@ -1,22 +1,30 @@
-'use strict';
-module.exports = (sequelize, DataTypes) => {
-  const partida = sequelize.define('partida', {
-    id_user_1: DataTypes.INTEGER,
-    id_user_2: DataTypes.INTEGER,
-    winner: DataTypes.INTEGER,
-    fen: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true,
-      }
-    },
-  }, {
-    underscored: true,
-    freezeTableName: true,
-  });
-  partida.associate = function(models) {
-    // associations can be defined here
-  };
-  return partida;
-};
+const { Model, DataTypes } = require('sequelize');
+
+class Partida extends Model {
+  static init(sequelize) {
+    super.init({
+
+      id_user_1: DataTypes.INTEGER,
+
+      id_user_2: DataTypes.INTEGER,
+
+      winner: DataTypes.INTEGER,
+
+      fen: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
+      },
+
+    }, {
+      sequelize,
+      modelName: 'partida',
+      freezeTableName: true,
+      underscored: true,
+    });
+  }
+}
+
+module.exports = Partida;

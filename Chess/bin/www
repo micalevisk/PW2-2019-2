@@ -31,7 +31,7 @@ app.once('ready', () => {
 /**
  * Database health check.
  */
-models.sequelize
+models.connection
   .sync() // NOTE: In production, you might want to consider using Migrations
   .then(() => app.emit('ready'));
 

@@ -3,7 +3,8 @@ const models = require('../models');
 
 const { ValidationError } = models.Sequelize;
 
-const { curso: Curso, area: Area } = models;
+const { Area, Curso } = models;
+
 
 async function index(req, res) {
   const cursos = await Curso.findAll();

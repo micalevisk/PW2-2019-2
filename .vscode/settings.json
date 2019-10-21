@@ -31,10 +31,6 @@
     "files.insertFinalNewline": true,
     "files.trimFinalNewlines": true,
     "files.trimTrailingWhitespace": true,
-    "files.associations": {
-      "*.make": "makefile",
-      "*.bats": "shellscript",
-    },
     "files.exclude": {
       "**/.git": true,
       "**/.svn": true,
