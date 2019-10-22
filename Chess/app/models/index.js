@@ -12,6 +12,7 @@ if (config.use_env_variable) {
   connection = new Sequelize(config.database, config.username, config.password, config);
 }
 
+// TODO: refatorar para automatizar partes repetidas, usando o Consign
 const Area = require('./area');
 const Curso = require('./curso');
 const Mensagem = require('./mensagem');

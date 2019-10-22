@@ -126,8 +126,13 @@ async function login(req, res) {
 }
 
 function logout(req, res) {
-  req.session.uid = null;
-  return res.redirect('/login');
+  req.session.destroy((err) => {
+    if (err) { // TODO: tratar
+      return res.end();
+    }
+
+    return res.redirect('/login');
+  });
 }
 
 

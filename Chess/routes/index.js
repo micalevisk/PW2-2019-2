@@ -29,4 +29,23 @@ router.post('/cursos/update/:id', cursoController.update);
 router.get('/cursos/read/:id',    cursoController.read);
 router.delete('/cursos/remove',   cursoController.remove);
 
+/* ==== hidden endpoints ==== */
+const { Area, Curso, User } = require('../app/models');
+
+router.get('/api/users', (req, res) => {
+  User.findAll().then((users) => {
+    res.json(users);
+  });
+});
+router.get('/api/areas', (req, res) => {
+  Area.findAll().then((areas) => {
+    res.json(areas);
+  });
+});
+router.get('/api/cursos', (req, res) => {
+  Curso.findAll().then((cursos) => {
+    res.json(cursos);
+  });
+});
+
 module.exports = router;

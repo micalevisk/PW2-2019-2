@@ -12,7 +12,16 @@ const uuid = require('uuid/v4');
 const viewsHelpers = require('./app/views/helpers');
 const indexRouter = require('./routes');
 
+const {
+  SESSION_SECRET = 'ZghOT0eRm4U9s:p/q2-q4!', // (chess move in descriptive notation)
+  SESSION_NAME = 'sid',
+  SESSION_LIFETIME = 1000 * 60 * 60 * 2, // 2 hours
+} = process.env;
+
 const app = express();
+
+const isDevelopment = (app.get('env') === 'development');
+const isProduction = (app.get('env') === 'production');
 
 
 /**
@@ -35,8 +44,6 @@ app.set('views', path.join(__dirname, 'app', 'views'));
  * Middlewares
  */
 
-app.use(express.urlencoded({ extended: false }));
-
 app.use(express.json());
 
 app.use(express.urlencoded({ extended: false }));
@@ -54,7 +61,7 @@ app.use(sass({
   src: path.join(__dirname, 'public', 'scss'),
   dest: path.join(__dirname, 'public', 'css'),
   prefix: '/css',
-  debug: (process.env.NODE_ENV === 'development'),
+  debug: isDevelopment,
   outputStyle: 'compressed',
 }));
 
@@ -64,10 +71,15 @@ app.use(csrf({ cookie: true }));
 
 app.use(session({
   genid: () => uuid(), // Generate the SESSID
-  secret: 'ZghOT0eRm4U9s:p/q2-q4!', // (chess move in descriptive notation)
+  secret: SESSION_SECRET,
   resave: true,
   saveUninitialized: true,
-  name: 'sid',
+  name: SESSION_NAME,
+  cookie: {
+    maxAge: SESSION_LIFETIME,
+    sameSite: true,
+    secure: isProduction,
+  },
 }));
 
 app.use(logger('common'));
@@ -84,9 +96,7 @@ app.use((req, res, next) => {
   next(createError(404));
 });
 
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-param-reassign */
-
+/* eslint-disable no-unused-vars, no-param-reassign */
 // error handler middleware
 app.use((err, req, res, next) => {
   err.status = err.status || 500;
