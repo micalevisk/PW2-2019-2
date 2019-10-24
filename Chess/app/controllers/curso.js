@@ -65,10 +65,7 @@ async function create(req, res) {
 async function read(req, res, next) {
   const { id } = req.params;
   const cursoRow = await Curso.findByPk(id, {
-    include: {
-      model: Area,
-      as: 'area',
-    },
+    include: { association: 'area' },
   });
 
   if (!cursoRow) {

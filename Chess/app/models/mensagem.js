@@ -4,9 +4,9 @@ class Mensagem extends Model {
   static init(sequelize) {
     super.init({
 
-      id_partida: DataTypes.INTEGER,
+      id_partida: DataTypes.INTEGER, // TODO: remover quando for adicionar a relação
 
-      id_user: DataTypes.INTEGER,
+      id_user: DataTypes.INTEGER, // TODO: remover quando for adicionar a relação
 
       message: {
         type: DataTypes.STRING,

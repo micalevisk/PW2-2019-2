@@ -42,7 +42,7 @@ class User extends Model {
         },
       },
 
-      id_curso: DataTypes.INTEGER,
+      id_curso: DataTypes.INTEGER, // TODO: remover quando for adicionar a relação
 
     }, {
       sequelize,

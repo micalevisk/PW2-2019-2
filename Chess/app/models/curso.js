@@ -55,8 +55,6 @@ class Curso extends Model {
         },
       },
 
-      id_area: DataTypes.INTEGER,
-
     }, {
       sequelize,
       modelName: 'curso',
@@ -76,7 +74,7 @@ class Curso extends Model {
   }
 
   static associate(models) {
-    this.belongsTo(models.area, { foreignKey: 'id_area' });
+    this.belongsTo(models.area, { foreignKey: 'id_area', as: 'area' });
   }
 }
 

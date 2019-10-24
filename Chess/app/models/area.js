@@ -22,7 +22,7 @@ class Area extends Model {
   }
 
   static associate(models) {
-    this.hasOne(models.curso, { foreignKey: 'id_area' });
+    this.hasOne(models.curso, { foreignKey: 'id_area', as: 'curso' });
   }
 }
 

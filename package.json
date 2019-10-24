@@ -9,7 +9,8 @@
   "scripts": {
     "requirements-check": "node ./check-node-version.js",
     "postinstall": "npm install --prefix Chess",
-    "lint:fix": "eslint --fix ."
+    "lint:fix": "eslint --fix .",
+    "dev": "cd Chess && npm run dev"
   },
   "repository": {
     "type": "git",
