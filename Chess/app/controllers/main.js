@@ -125,10 +125,10 @@ async function login(req, res) {
   return res.end();
 }
 
-function logout(req, res) {
+function logout(req, res, next) {
   req.session.destroy((err) => {
-    if (err) { // TODO: tratar
-      return res.end();
+    if (err) {
+      return next(err);
     }
 
     return res.redirect('/login');
