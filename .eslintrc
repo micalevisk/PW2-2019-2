@@ -25,6 +25,12 @@
       "rules": {
         "no-param-reassign": "off"
       }
+    },
+    {
+      "files": ["Chess/routes/*.js"],
+      "rules": {
+        "no-multi-spaces": "off"
+      }
     }
   ]
 }
