@@ -1,12 +1,18 @@
 #!/usr/bin/env node
-/* eslint-disable no-use-before-define */
-require('./loadEnvs');
-
 const debug = require('debug')('chess:server');
+const fs = require('fs');
 const http = require('http');
+const socketIO = require('socket.io');
 
 const app = require('../app');
 const models = require('../app/models');
+
+/**
+ * Setup environment variables.
+ */
+require('./loadEnvs');
+
+const isProduction = (app.get('env') === 'production');
 
 /**
  * Get port from environment and store in Express.
@@ -20,6 +26,16 @@ app.set('port', PORT);
 const server = http.createServer(app);
 
 /**
+ * Initialize Socket.io middleware.
+ */
+const io = socketIO(server);
+
+io.on('connect', (/* client */) => {
+  // do something
+});
+
+
+/**
  * Listen on provided port, on all network interfaces.
  */
 app.once('ready', () => {
@@ -31,10 +47,17 @@ app.once('ready', () => {
 /**
  * Database health check.
  */
-models.connection
-  .sync() // NOTE: In production, you might want to consider using Migrations
-  .then(() => app.emit('ready'));
-
+if (isProduction) {
+  models.connection
+    .authenticate()
+    .then(() => app.emit('ready'))
+    .catch(onError);
+} else {
+  models.connection
+    .sync()
+    .then(() => app.emit('ready'))
+    .catch(onError);
+}
 
 /**
  * Normalize a port into a number, string, or false.
@@ -96,3 +119,17 @@ function onListening() {
     : `port ${addr.port}`;
   debug(`Listening on ${bind}`);
 }
+
+
+process.on('unhandledRejection', (reason) => {
+  console.error('Unhandled Rejection at:', reason.stack || reason);
+
+  if (reason.name === 'SequelizeConnectionRefusedError') {
+    process.exit(666);
+  }
+});
+
+process.on('uncaughtException', (err) => {
+  fs.writeSync(1, `Caugh exception: ${err}\n`);
+  process.exit(1);
+});

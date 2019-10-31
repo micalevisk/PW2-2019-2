@@ -3,14 +3,24 @@ const { Router } = require('express');
 const router = Router();
 
 router.use((req, res, next) => {
-  res.locals.isLogged = !!req.session.uid;
+  req.isLogged = !!req.session.uid;
+  res.locals.isLogged = req.isLogged; // To Handlebars
   next();
 });
+
+// TODO: refatorar lógica de acesso
+const canAccessPage = (req, res, next) => {
+  if (req.isLogged) {
+    next();
+  } else {
+    res.redirect('/login');
+  }
+};
 
 /* ==== Main Controler ==== */
 router.use('/', require('./main'));
 
 /* ==== Curso Controler ==== */
-router.use('/cursos', require('./curso'));
+router.use('/cursos', canAccessPage, require('./curso'));
 
 module.exports = router;

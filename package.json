@@ -1,5 +1,6 @@
 {
   "name": "progweb2",
+  "version": "1.0.0",
   "engineStrict": true,
   "engines": {
     "node": ">=8.16.1"

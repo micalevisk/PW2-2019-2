@@ -1,3 +1,7 @@
+.fas::after {
+  content: " ";
+}
+
 body {
   padding-top: 120px;
 }
@@ -42,5 +46,13 @@ body {
     margin: 0 auto;
     display: block;
     width: 50%;
+  }
+}
+
+/* container Game */
+.main__game {
+  .chess-board {
+    width: 594px;
+    float: left;
   }
 }

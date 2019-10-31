@@ -1,6 +1,3 @@
-/* eslint-env browser, jquery */
-/* eslint-disable prefer-arrow-callback, no-alert */
-
 /**
  * Initialize all tooltips on a page.
  * (c) https://getbootstrap.com/docs/4.0/components/tooltips

@@ -1,13 +1,15 @@
+const debug = require('debug');
+
 const { wrapAsync, comparePasswords } = require('../../lib/utils');
 const models = require('../models');
 
 const { ValidationError, ValidationErrorItem } = models.Sequelize;
 
-const { Curso, User } = models;
-
+const { Curso, User, Partida } = models;
+const logDB = debug('chess:db');
 
 function index(req, res) {
-  res.render('main/index');
+  return res.render('main/index');
 }
 
 function about(req, res) {
@@ -36,7 +38,7 @@ async function signup(req, res) {
       acceptTerms,
     } = req.body;
 
-    const newUserData = {
+    const newUserValues = {
       name,
       email,
       password,
@@ -51,17 +53,17 @@ async function signup(req, res) {
         ]);
       }
 
-      await User.create(newUserData);
+      await User.create(newUserValues);
       return res.redirect('/'); // TODO: fazer login automaticamente
     } catch (err) {
-      newUserData.password = null;
+      newUserValues.password = null;
 
       if (err instanceof ValidationError) {
         return res.render('main/signup', {
           page: 'Cadastro de Usuário',
           cursos,
           csrfToken: req.csrfToken(),
-          user: newUserData,
+          user: newUserValues,
           errors: err.errors,
         });
       }
@@ -135,6 +137,67 @@ function logout(req, res, next) {
   });
 }
 
+async function game(req, res) { // TODO: finalizar
+  const userIdAuthor = req.session.uid || 1;
+  const { color } = req.query;
+  const { id: gameId } = req.params;
+
+  if (gameId) {
+    const partida = await Partida.findByPk(gameId);
+    if (partida) {
+      // TODO: verificar se o usuário que solicitou tem permissão para ver essa partida
+
+      return res.render('main/game', {
+        page: 'Jogar!',
+        styleResources: [
+          '/css/chessboard-1.0.0.min.css',
+        ],
+        jsResources: [
+          '/js/chess.min.js',
+          '/js/chessboard-1.0.0.min.js',
+          '/socket.io/socket.io.js',
+        ],
+        partida,
+      });
+    }
+
+    return res.end();
+  }
+
+  if (color) { // Criar nova partida.
+    const newPartidaValues = {
+      id_user_1: userIdAuthor,
+      author_color: color,
+    };
+
+    try {
+      const partida = await Partida.create(newPartidaValues);
+      return res.redirect(`/partida/${partida.id}`);
+    } catch (err) {
+      if (err instanceof ValidationError) {
+        logDB(err);// §
+        return res.redirect('/partida');
+      }
+
+      throw err;
+    }
+  }
+
+  const pendingPartida = await Partida.findOne({
+    where: {
+      id_user_1: userIdAuthor,
+      id_user_2: null,
+    },
+  });
+
+  if (pendingPartida) {
+    return res.redirect(`/partida/${pendingPartida.id}`);
+  }
+
+  return res.render('main/choosecolor', {
+    page: 'nova partida',
+  });
+}
 
 module.exports = {
   index,
@@ -143,4 +206,6 @@ module.exports = {
   signup: wrapAsync(signup),
   login: wrapAsync(login),
   logout,
+
+  game: wrapAsync(game),
 };

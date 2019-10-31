@@ -1,0 +1,133 @@
+<div class="main__game container clearfix">
+
+  <div class="chess-board">
+  <div id="board"></div>
+  {{!-- <div class="opponents">Aguardando oponente.</div> --}}
+  <div id="status"></div>
+
+</div>
+
+</div>
+
+{{!-- <script src="/js/main/game.js"></script> --}}
+<script>
+  //const socket = io();
+
+  const partida = 36;
+
+  const my_color = 'white'; //'{{color}}';
+  const $status = $('#status');
+
+  const game = new Chess();
+  game.load('{{partida.fen}}'); // load FEN string
+
+  const board = Chessboard('#board', {
+    width: '100px',
+    draggable: true,
+    orientation: 'white',
+    position: '{{partida.fen}}',
+    moveSpeed: 'slow',
+    pieceTheme: '/img/chesspieces/wikipedia/{piece}.png',
+    onDragStart: onDragStart,
+    onDrop: onDrop,
+    onSnapEnd: onSnapEnd,
+  });
+
+  function onDragStart(source, piece, position, orientation) {
+    // do not pick up pieces if the game is over
+    if (game.game_over()) return false;
+
+    // only pick up pieces for its own color
+    if ((my_color === 'white' && piece.search(/^b/) !== -1) ||
+        (my_color === 'black' && piece.search(/^w/) !== -1)) {
+      return false
+    }
+
+    // only pick up pieces for the side to move
+    if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
+        (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+      return false
+    }
+  }
+
+  function onDrop(source, target) {
+    // see if the move is legal
+    var move = game.move({
+      from: source,
+      to: target,
+      promotion: 'q' // NOTE: always promote to a queen for example simplicity
+    });
+
+    // illegal move
+    if (move === null) return 'snapback';
+
+    // Enviar posição para adversário
+    /*
+    socket.emit('move', {
+      partida: 36,
+      source: source,
+      target: target,
+      position: game.fen()
+    });
+    */
+
+    updateStatus();
+  }
+
+  // update the board position after the piece snap
+  // for castling, en passant, pawn promotion
+  function onSnapEnd() {
+    board.position(game.fen())
+  }
+
+  function updateStatus () {
+    var status = ''
+
+    var moveColor = '<b>branco</b>'
+    if (game.turn() === 'b') {
+      moveColor = '<b>preto</b>'
+    }
+
+    // checkmate?
+    if (game.in_checkmate()) {
+      status = 'É xeque-mate! Vitória do jogador ' + moveColor + '!'
+    }
+
+    // empate? (draw)
+    else if (game.in_draw()) {
+      status = 'O jogo empatou!'
+    }
+
+    // game still on
+    else {
+      status = 'A vez é do jogador ' + moveColor + '.'
+
+      // check?
+      if (game.in_check()) {
+        status += ', o jogador ' + moveColor + ' está em xeque.'
+      }
+    }
+
+    $status.html(status)
+  }
+
+  /*
+  socket.on('move', function(move){
+
+    if (move.partida == 36) {
+      board.move(move.source + '-' + move.target);
+
+      game.move({
+        from: move.source,
+        to: move.target,
+        promotion: 'q' // NOTE: always promote to a queen for example simplicity
+      });
+
+      updateStatus();
+    }
+
+  });
+  */
+
+  updateStatus();
+</script>
