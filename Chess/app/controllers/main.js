@@ -3,11 +3,11 @@ const models = require('../models');
 
 const { ValidationError, ValidationErrorItem } = models.Sequelize;
 
-const { Curso, User } = models;
+const { Curso, User, Partida } = models;
 
 
 function index(req, res) {
-  res.render('main/index');
+  return res.render('main/index');
 }
 
 function about(req, res) {
@@ -135,6 +135,58 @@ function logout(req, res, next) {
   });
 }
 
+async function game(req, res) {
+  const { color } = req.query;
+  const { id: gameId } = req.params;
+
+  if (!gameId) { // Recuperar partida iniciada mas sem oponente ou inicar processo para criar nova partida.
+    const userIdAuthor = req.session.uid || 1;
+
+    if (color) { // Criar nova partida.
+      const newPartidaData = {
+        id_user_1: userIdAuthor,
+        fen: 'start',
+        author_color: color,
+      };
+
+      try {
+        const partida = await Partida.create(newPartidaData);
+        return res.redirect(`/partida/${partida.id}`); // TODO: refatorar lógica
+      } catch (err) {
+        if (err instanceof ValidationError) {
+          return res.redirect('/partida');
+        }
+
+        throw err;
+      }
+    } else {
+      // TODO: procurar partida pendende do usuário de id igual a `req.session.uid`, i.e., partida onde `user_id_2` é null
+      // const pendingPartida = await Partida.findOne({ where: { user_id_1: user_id_1, user_id_2: null  } })
+    }
+
+    return res.render('main/choosecolor', {
+      page: 'iniciar nova partida',
+    });
+  }
+
+  const partida = await Partida.findByPk(gameId);
+  if (partida) {
+    return res.render('main/game', {
+      page: 'Jogar!',
+      styleResources: [
+        '/css/chessboard-1.0.0.min.css',
+      ],
+      jsResources: [
+        '/js/chess.min.js',
+        '/js/chessboard-1.0.0.min.js',
+        '/socket.io/socket.io.js',
+      ],
+      partida,
+    });
+  }
+
+  return res.end();
+}
 
 module.exports = {
   index,
@@ -143,4 +195,6 @@ module.exports = {
   signup: wrapAsync(signup),
   login: wrapAsync(login),
   logout,
+
+  game: wrapAsync(game),
 };

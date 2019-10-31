@@ -48,14 +48,20 @@ app.use(express.json());
 
 app.use(express.urlencoded({ extended: false }));
 
+// TODO: refatorar para evitar colisão de nomes de recursos e exposição de arquivos não usados
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/js', [
   express.static(path.join(__dirname, '/node_modules/jquery/dist')),
   express.static(path.join(__dirname, '/node_modules/popper.js/dist/umd')),
   express.static(path.join(__dirname, '/node_modules/bootstrap/dist/js')),
+  express.static(path.join(__dirname, '/node_modules/@chrisoakman/chessboardjs/dist')),
+  express.static(path.join(__dirname, '/node_modules/chess.js')),
 ]);
 app.use('/webfonts',
   express.static(path.join(__dirname, '/node_modules/@fortawesome/fontawesome-free/webfonts')));
+app.use('/css', [
+  express.static(path.join(__dirname, 'node_modules/@chrisoakman/chessboardjs/dist')),
+]);
 
 app.use(sass({
   src: path.join(__dirname, 'public', 'scss'),
@@ -75,6 +81,7 @@ app.use(session({
   resave: true,
   saveUninitialized: true,
   name: SESSION_NAME,
+  // store: , // TODO: escolher uma das listadas https://github.com/expressjs/session#compatible-session-stores
   cookie: {
     maxAge: SESSION_LIFETIME,
     sameSite: true,

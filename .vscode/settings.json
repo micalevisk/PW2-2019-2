@@ -60,7 +60,7 @@
     //        OTHERS         //
     //~~~~~~~~~~~~~~~~~~~~~~~//
     "git.confirmSync": false,
-    "git.autofetch": true,
+    "git.autofetch": false,
     "git.ignoreLimitWarning": true,
 
     "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",

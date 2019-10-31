@@ -11,6 +11,7 @@ module.exports = {
 
   toUpper: (str) => (str || '').toUpperCase(),
 
+  capitalizeFirst: (str) => str.charAt(0).toUpperCase() + str.slice(1),
 
   // ██╗  ██╗████████╗███╗   ███╗██╗
   // ██║  ██║╚══██╔══╝████╗ ████║██║

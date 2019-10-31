@@ -13,16 +13,20 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       id_user_2: {
-        allowNull: false,
+        allowNull: true, // Se `NULL` então a partida não tem oponente definido
         type: Sequelize.INTEGER
       },
       winner: {
-        allowNull: false,
+        allowNull: true, // Se `NULL` então a partida não foi finalizada
         type: Sequelize.INTEGER
       },
       fen: {
         allowNull: false,
         type: Sequelize.STRING
+      },
+      author_color: {
+        allowNull: false,
+        type: Sequelize.ENUM('w', 'b')
       },
       created_at: {
         allowNull: false,
