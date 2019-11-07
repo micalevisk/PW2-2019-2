@@ -17,7 +17,7 @@
 cd Chess
 
 cp .env.prod.example .env
-vim .env # Informe as credenciais da sua instãncia MySQL
+vim .env # Informe as credenciais da sua instância MySQL
 
 npm install
 
@@ -36,6 +36,8 @@ cd Chess
 vim .env.dev # Informe as credenciais da sua instância MySQL
 
 npm install
+
+NODE_ENV=development npm run db:seed-all
 
 npm run dev
 ```

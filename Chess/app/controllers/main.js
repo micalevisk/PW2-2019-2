@@ -5,6 +5,7 @@ const { ValidationError, ValidationErrorItem } = models.Sequelize;
 
 const { Curso, User, Partida } = models;
 
+const log = logger('controllers');
 
 function index(req, res) {
   return res.render('main/index');
@@ -33,15 +34,18 @@ async function signup(req, res) {
       password,
       passwordRepeat,
       idCurso,
-      acceptTerms,
+      agreeToTerms = false,
     } = req.body;
 
-    const newUserData = {
+    if (!agreeToTerms) {
+      return res.end(); // TODO: lançar erro de validação (precisa definir feedback no frontend)
+    }
+
+    const newUserValues = {
       name,
       email,
       password,
       id_curso: idCurso,
-      acceptTerms,
     };
 
     try {
@@ -51,17 +55,18 @@ async function signup(req, res) {
         ]);
       }
 
-      await User.create(newUserData);
+      await User.create(newUserValues);
       return res.redirect('/'); // TODO: fazer login automaticamente
     } catch (err) {
-      newUserData.password = null;
+      newUserValues.password = null;
 
       if (err instanceof ValidationError) {
+        log.error(err);
         return res.render('main/signup', {
           page: 'Cadastro de Usuário',
           cursos,
           csrfToken: req.csrfToken(),
-          user: newUserData,
+          user: newUserValues,
           errors: err.errors,
         });
       }
@@ -135,57 +140,66 @@ function logout(req, res, next) {
   });
 }
 
-async function game(req, res) {
+async function game(req, res) { // TODO: finalizar
+  const userIdAuthor = req.session.uid || 1;
   const { color } = req.query;
   const { id: gameId } = req.params;
 
-  if (!gameId) { // Recuperar partida iniciada mas sem oponente ou inicar processo para criar nova partida.
-    const userIdAuthor = req.session.uid || 1;
+  if (gameId) {
+    const partida = await Partida.findByPk(gameId);
+    if (partida) {
+      // TODO: verificar se o usuário que solicitou tem permissão para ver essa partida
 
-    if (color) { // Criar nova partida.
-      const newPartidaData = {
-        id_user_1: userIdAuthor,
-        fen: 'start',
-        author_color: color,
-      };
-
-      try {
-        const partida = await Partida.create(newPartidaData);
-        return res.redirect(`/partida/${partida.id}`); // TODO: refatorar lógica
-      } catch (err) {
-        if (err instanceof ValidationError) {
-          return res.redirect('/partida');
-        }
-
-        throw err;
-      }
-    } else {
-      // TODO: procurar partida pendende do usuário de id igual a `req.session.uid`, i.e., partida onde `user_id_2` é null
-      // const pendingPartida = await Partida.findOne({ where: { user_id_1: user_id_1, user_id_2: null  } })
+      return res.render('main/game', {
+        page: 'Jogar!',
+        styleResources: [
+          '/css/chessboard-1.0.0.min.css',
+        ],
+        jsResources: [
+          '/js/chess.min.js',
+          '/js/chessboard-1.0.0.min.js',
+          '/socket.io/socket.io.js',
+        ],
+        partida,
+      });
     }
 
-    return res.render('main/choosecolor', {
-      page: 'iniciar nova partida',
-    });
+    return res.end();
   }
 
-  const partida = await Partida.findByPk(gameId);
-  if (partida) {
-    return res.render('main/game', {
-      page: 'Jogar!',
-      styleResources: [
-        '/css/chessboard-1.0.0.min.css',
-      ],
-      jsResources: [
-        '/js/chess.min.js',
-        '/js/chessboard-1.0.0.min.js',
-        '/socket.io/socket.io.js',
-      ],
-      partida,
-    });
+  if (color) { // Criar nova partida.
+    const newPartidaValues = {
+      id_user_1: userIdAuthor,
+      author_color: color,
+    };
+
+    try {
+      const partida = await Partida.create(newPartidaValues);
+      return res.redirect(`/partida/${partida.id}`);
+    } catch (err) {
+      if (err instanceof ValidationError) {
+        log.error(err);
+        return res.redirect('/partida');
+      }
+
+      throw err;
+    }
   }
 
-  return res.end();
+  const pendingPartida = await Partida.findOne({
+    where: {
+      id_user_1: userIdAuthor,
+      id_user_2: null,
+    },
+  });
+
+  if (pendingPartida) {
+    return res.redirect(`/partida/${pendingPartida.id}`);
+  }
+
+  return res.render('main/choosecolor', {
+    page: 'nova partida',
+  });
 }
 
 module.exports = {

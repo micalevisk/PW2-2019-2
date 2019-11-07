@@ -1,4 +1,4 @@
-require('../bin/loadEnvs');
+require('../lib/configure');
 
 // Usando o https://remotemysql.com
 module.exports = {

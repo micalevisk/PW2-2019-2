@@ -1,16 +1,16 @@
 #!/usr/bin/env node
-const debug = require('debug')('chess:server');
-const fs = require('fs');
+/**
+ * Load bootstrap file.
+ */
+require('../lib/configure');
+
 const http = require('http');
 const socketIO = require('socket.io');
 
 const app = require('../app');
 const models = require('../app/models');
 
-/**
- * Setup environment variables.
- */
-require('./loadEnvs');
+const log = logger('server');
 
 const isProduction = (app.get('env') === 'production');
 
@@ -97,11 +97,11 @@ function onError(err) {
   // handle specific listen errors with friendly messages
   switch (err.code) {
     case 'EACCES':
-      console.error(`${bind} requires elevated privileges`);
+      log.error(`${bind} requires elevated privileges`);
       process.exit(1);
       break;
     case 'EADDRINUSE':
-      console.error(`${bind} is already in use`);
+      log.error(`${bind} is already in use`);
       process.exit(1);
       break;
     default:
@@ -117,19 +117,5 @@ function onListening() {
   const bind = (typeof addr === 'string')
     ? `pipe ${addr}`
     : `port ${addr.port}`;
-  debug(`Listening on ${bind}`);
+  log(`Listening on ${bind}`);
 }
-
-
-process.on('unhandledRejection', (reason) => {
-  console.error('Unhandled Rejection at:', reason.stack || reason);
-
-  if (reason.name === 'SequelizeConnectionRefusedError') {
-    process.exit(666);
-  }
-});
-
-process.on('uncaughtException', (err) => {
-  fs.writeSync(1, `Caugh exception: ${err}\n`);
-  process.exit(1);
-});

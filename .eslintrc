@@ -1,6 +1,9 @@
 {
   "plugins": ["eslint-plugin-import-helpers"],
   "extends": "airbnb-base",
+  "globals": {
+    "logger": false,
+  },
   "rules": {
     "no-console": "off",
     "import-helpers/order-imports": [

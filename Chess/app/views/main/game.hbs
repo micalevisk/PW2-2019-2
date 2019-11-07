@@ -19,13 +19,13 @@
   const $status = $('#status');
 
   const game = new Chess();
-  game.load('start'); // load FEN string
+  game.load('{{partida.fen}}'); // load FEN string
 
   const board = Chessboard('#board', {
     width: '100px',
     draggable: true,
     orientation: 'white',
-    position: 'start',
+    position: '{{partida.fen}}',
     moveSpeed: 'slow',
     pieceTheme: '/img/chesspieces/wikipedia/{piece}.png',
     onDragStart: onDragStart,

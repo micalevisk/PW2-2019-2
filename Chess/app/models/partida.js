@@ -15,9 +15,14 @@ class Partida extends Model {
 
       fen: {
         type: DataTypes.STRING,
+        defaultValue: '',
         allowNull: false,
+      },
+
+      author_color: {
+        type: DataTypes.ENUM('w', 'b'),
         validate: {
-          notEmpty: true,
+          isIn: [['w', 'b']],
         },
       },
 
