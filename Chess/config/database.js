@@ -1,4 +1,4 @@
-require('../lib/configure');
+require('./bootstrap');
 
 // Usando o https://remotemysql.com
 module.exports = {

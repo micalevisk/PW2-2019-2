@@ -4,7 +4,11 @@ const router = Router();
 
 router.use((req, res, next) => {
   req.isLogged = !!req.session.uid;
-  res.locals.isLogged = req.isLogged; // To Handlebars
+
+  // Handlebars variables
+  res.locals.isLogged = req.isLogged;
+  res.locals.userName = req.session.userName;
+
   next();
 });
 

@@ -10,6 +10,7 @@ const path = require('path');
 const uuid = require('uuid/v4');
 
 const viewsHelpers = require('./app/views/helpers');
+const { connectToSession } = require('./config/sessionStore');
 const indexRouter = require('./routes');
 
 const {
@@ -23,6 +24,7 @@ const app = express();
 const isDevelopment = (app.get('env') === 'development');
 const isProduction = (app.get('env') === 'production');
 
+const sessionStore = (isProduction || process.env.SESS_URL) ? connectToSession(session) : null;
 
 /**
  * App config
@@ -39,6 +41,7 @@ app.engine('hbs', handlebars({
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'app', 'views'));
 
+app.set('trust proxy', 1); // Trust first proxy
 
 /**
  * Middlewares
@@ -77,11 +80,16 @@ app.use(csrf({ cookie: true }));
 
 app.use(session({
   genid: () => uuid(), // Generate the SESSID
-  secret: SESSION_SECRET,
-  resave: true,
-  saveUninitialized: true,
   name: SESSION_NAME,
-  // store: , // TODO: escolher uma das listadas https://github.com/expressjs/session#compatible-session-stores
+  secret: SESSION_SECRET,
+  ...(sessionStore ? {
+    resave: false,
+    saveUninitialized: false,
+    store: sessionStore,
+  } : {
+    resave: true,
+    saveUninitialized: true,
+  }),
   cookie: {
     maxAge: SESSION_LIFETIME,
     sameSite: true,

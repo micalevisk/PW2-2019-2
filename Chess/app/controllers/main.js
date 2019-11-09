@@ -116,6 +116,8 @@ async function login(req, res) {
       }
 
       req.session.uid = user.id;
+      req.session.userName = user.name;
+
       return res.redirect('/');
     } catch (err) {
       return res.render('main/login', {

@@ -1,8 +1,5 @@
 #!/usr/bin/env node
-/**
- * Load bootstrap file.
- */
-require('../lib/configure');
+require('../config/bootstrap');
 
 const http = require('http');
 const socketIO = require('socket.io');
@@ -17,7 +14,7 @@ const isProduction = (app.get('env') === 'production');
 /**
  * Get port from environment and store in Express.
  */
-const PORT = normalizePort(process.env.PORT || '3000');
+const PORT = normalizePort(process.env.PORT || '4567');
 app.set('port', PORT);
 
 /**

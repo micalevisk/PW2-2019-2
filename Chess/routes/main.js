@@ -5,7 +5,6 @@ const router = Router();
 const mainController = require('../app/controllers/main');
 
 // TODO: refatorar lógica de acesso
-/*
 const canAccessPage = (req, res, next) => {
   if (req.isLogged) {
     next();
@@ -13,9 +12,8 @@ const canAccessPage = (req, res, next) => {
     res.redirect('/login');
   }
 };
-*/
 
-router.get('/',            /* canAccessPage, */ mainController.index);
+router.get('/',            canAccessPage, mainController.index);
 router.get('/sobre', mainController.about);
 router.get('/signup', mainController.signup);
 router.post('/signup', mainController.signup);

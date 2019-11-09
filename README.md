@@ -33,6 +33,7 @@ npm start
 ```bash
 cd Chess
 
+cp .env.dev.example .env.dev
 vim .env.dev # Informe as credenciais da sua instância MySQL
 
 npm install
