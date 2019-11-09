@@ -41,8 +41,6 @@ app.engine('hbs', handlebars({
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'app', 'views'));
 
-app.set('trust proxy', 1); // Trust first proxy
-
 /**
  * Middlewares
  */
@@ -93,7 +91,7 @@ app.use(session({
   cookie: {
     maxAge: SESSION_LIFETIME,
     sameSite: true,
-    secure: isProduction,
+    secure: isProduction, // Secure cookies requires an https-enabled
   },
 }));
 

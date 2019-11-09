@@ -2,7 +2,7 @@ const { Router } = require('express');
 
 const router = Router();
 
-const mainController = require('../app/controllers/main');
+const controllers = require('../app/controllers');
 
 // TODO: refatorar lógica de acesso
 const canAccessPage = (req, res, next) => {
@@ -13,26 +13,21 @@ const canAccessPage = (req, res, next) => {
   }
 };
 
-router.get('/',            canAccessPage, mainController.index);
-router.get('/sobre', mainController.about);
-router.get('/signup', mainController.signup);
-router.post('/signup', mainController.signup);
-router.get('/login', mainController.login);
-router.post('/login', mainController.login);
-router.get('/logout', mainController.logout);
-router.get('/partida/:id',    /* canAccessPage, */ mainController.game);
-router.get('/partida',        /* canAccessPage, */ mainController.game);
-// router.get('/ranking', mainController.ranking);
+router.get('/',            canAccessPage, controllers.main.index);
 
-router.get('/',            /* canAccessPage, */ mainController.index);
-router.get('/sobre',       mainController.about);
-router.get('/signup',      mainController.signup);
-router.post('/signup',     mainController.signup);
-router.get('/login',       mainController.login);
-router.post('/login',      mainController.login);
-router.get('/logout',      mainController.logout);
-router.get('/partida/:id',    /* canAccessPage, */ mainController.game);
-router.get('/partida',        /* canAccessPage, */ mainController.game);
-// router.get('/ranking', mainController.ranking);
+router.get('/sobre',       controllers.main.about);
+
+router.get('/signup',      controllers.main.signup);
+router.post('/signup',     controllers.main.signup);
+
+router.get('/login',       controllers.main.login);
+router.post('/login',      controllers.main.login);
+
+router.get('/logout',      controllers.main.logout);
+
+router.get('/partida/:id', canAccessPage, controllers.main.game);
+router.get('/partida',     canAccessPage, controllers.main.game);
+
+// router.get('/ranking',     controllers.main.ranking);
 
 module.exports = router;
