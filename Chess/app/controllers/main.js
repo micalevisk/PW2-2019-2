@@ -15,6 +15,23 @@ function about(req, res) {
   res.render('main/about', { page: 'Sobre' });
 }
 
+function createSessionToUser(user, req) {
+  req.session.uid = user.id;
+  req.session.userName = user.name;
+}
+
+function destroySession(req) {
+  return new Promise((resolve, reject) => {
+    req.session.destroy((err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
 
 async function signup(req, res) {
   const cursos = await Curso.findAll();
@@ -55,8 +72,11 @@ async function signup(req, res) {
         ]);
       }
 
-      await User.create(newUserValues);
-      return res.redirect('/'); // TODO: fazer login automaticamente
+      const newUser = await User.create(newUserValues);
+
+      createSessionToUser(newUser, req);
+
+      return res.redirect('/');
     } catch (err) {
       newUserValues.password = null;
 
@@ -115,8 +135,7 @@ async function login(req, res) {
         ]);
       }
 
-      req.session.uid = user.id;
-      req.session.userName = user.name;
+      createSessionToUser(user, req);
 
       return res.redirect('/');
     } catch (err) {
@@ -132,14 +151,9 @@ async function login(req, res) {
   return res.end();
 }
 
-function logout(req, res, next) {
-  req.session.destroy((err) => {
-    if (err) {
-      return next(err);
-    }
-
-    return res.redirect('/login');
-  });
+async function logout(req, res) {
+  await destroySession(req);
+  return res.redirect('/login');
 }
 
 async function game(req, res) { // TODO: finalizar
@@ -210,7 +224,7 @@ module.exports = {
 
   signup: wrapAsync(signup),
   login: wrapAsync(login),
-  logout,
+  logout: wrapAsync(logout),
 
   game: wrapAsync(game),
 };
