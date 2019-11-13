@@ -91,7 +91,7 @@ app.use(session({
   cookie: {
     maxAge: SESSION_LIFETIME,
     sameSite: true,
-    secure: isProduction, // Secure cookies requires an https-enabled
+    secure: false, // Secure cookies requires an https-enabled
   },
 }));
 
