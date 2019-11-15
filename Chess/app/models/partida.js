@@ -4,26 +4,15 @@ class Partida extends Model {
   static init(sequelize) {
     super.init({
 
-      id_user_1: DataTypes.INTEGER, // TODO: remover quando for adicionar a relação
-
-      id_user_2: DataTypes.INTEGER, // TODO: remover quando for adicionar a relação
-
       winner: {
         type: DataTypes.INTEGER,
         allowNull: true,
-      }, // TODO: remover quando for adicionar a relação
+      },
 
       fen: {
         type: DataTypes.STRING,
         defaultValue: '',
         allowNull: false,
-      },
-
-      author_color: {
-        type: DataTypes.ENUM('w', 'b'),
-        validate: {
-          isIn: [['w', 'b']],
-        },
       },
 
       author_color: {
@@ -39,6 +28,11 @@ class Partida extends Model {
       freezeTableName: true,
       underscored: true,
     });
+  }
+
+  static associate(models) {
+    this.belongsTo(models.user, { foreignKey: 'id_user_1', as: 'userOwner' });
+    this.belongsTo(models.user, { foreignKey: 'id_user_2', as: 'userOpponent' });
   }
 }
 

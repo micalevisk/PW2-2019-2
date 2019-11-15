@@ -55,6 +55,7 @@ class User extends Model {
           user.password = user.password.trim();
         },
         beforeSave(user) {
+          user.name = user.name.toLowerCase();
           return cryptPassword(user.password)
             .then((encryptedPassword) => {
               user.password = encryptedPassword;

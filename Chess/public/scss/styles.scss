@@ -2,6 +2,14 @@
   content: " ";
 }
 
+.wrap-text::before {
+  content: attr(data-wrapb);
+}
+.wrap-text::after {
+  content: attr(data-wrapa);
+}
+
+
 body {
   padding-top: 120px;
 }
@@ -40,6 +48,7 @@ body {
   }
 }
 
+
 /* container About */
 .main__about {
   img {
@@ -49,10 +58,41 @@ body {
   }
 }
 
+/* container Index */
+.main__index {
+
+  .small-board {
+    width: 200px;
+    margin: 10px;
+    float: left;
+
+    a:hover {
+      text-decoration: none;
+      text-shadow: 0 0 2px rgba($link-color, 0.6);
+    }
+
+    .black {
+      color:black;
+      text-shadow:-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+    }
+    .white {
+      color:white;
+      text-shadow:-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+    }
+  }
+
+}
+
 /* container Game */
 .main__game {
+
   .chess-board {
     width: 594px;
     float: left;
   }
+
+  [class^="piece-"] {
+    cursor: grab;
+  }
+
 }

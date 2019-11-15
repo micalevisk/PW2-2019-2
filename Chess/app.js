@@ -11,7 +11,7 @@ const uuid = require('uuid/v4');
 
 const viewsHelpers = require('./app/views/helpers');
 const { connectToSession } = require('./config/sessionStore');
-const indexRouter = require('./routes');
+const routes = require('./routes');
 
 const {
   SESSION_SECRET = 'ZghOT0eRm4U9s:p/q2-q4!', // (chess move in descriptive notation)
@@ -23,8 +23,9 @@ const app = express();
 
 const isDevelopment = (app.get('env') === 'development');
 const isProduction = (app.get('env') === 'production');
+const hasSessionURL = (!!process.env.SESS_URL);
 
-const sessionStore = (isProduction || process.env.SESS_URL) ? connectToSession(session) : null;
+const sessionStore = (isProduction || hasSessionURL) ? connectToSession(session) : null;
 
 /**
  * App config
@@ -101,7 +102,7 @@ app.use(logger('common'));
  * Routes
  */
 
-app.use('/', indexRouter);
+app.use(routes);
 
 
 // catch 404 and forward to error handler

@@ -2,11 +2,67 @@
 
   <div class="row">
     <div class="col-9 mt-4">
-      <p class="lead">Seja bem vindo ao aplicativo de partidas de xadrez do Instituto de Computação. Para iniciar uma nova partida, <a href="/game/new-match">clique aqui</a>.</p>
+      <p class="lead">Seja bem vindo ao aplicativo de partidas de xadrez do Instituto de Computação. Para iniciar uma
+        nova partida, <a href="/game/new-match">clique aqui</a>.</p>
     </div>
     <div class="col-3">
       <img src="/img/chess-clipart.png" alt="">
     </div>
   </div>
+
+  <h2 class="text-capitalize">minhas partidas <span class="wrap-text" data-wrapb="("
+      data-wrapa=")">{{userMatches.length}}</span></h2>
+  {{#each userMatches as |match| }}
+  <div class="small-board">
+    <a href="/partida/{{match.id}}">
+      <div id="board-{{match.id}}"></div>
+      <div class="small-info text-white text-capitalize text-center">
+        {{#if match.userOpponent}}
+        <span class="{{getOwnerPieceColor match.author_color}}"><i class="fas fa-chess-king"></i></span>
+        <span>&nbsp;{{match.userOwner.name}}</span>
+        <br>
+        <span class="{{getOpponentPieceColor match.author_color}}"><i class="fas fa-chess-king"></i></span>
+        <span>&nbsp;{{match.userOpponent.name}}</span>
+        {{else}}
+        <i class="fas fa-chess-king {{getOwnerPieceColor match.author_color}}"></i>
+        <span class="text-muted">&nbsp;aguardando oponente&hellip;</span>
+        {{/if}}
+      </div>
+    </a>
+  </div>
+  <script>//§
+    Chessboard('board-{{match.id}}', {
+      orientation: '{{getOwnerPieceColor match.author_color}}',
+      position: '{{match.fen}}',
+      showNotation: false,
+    });
+  </script>
+  {{/each}}
+  <div class="clearfix"></div>
+  <br>
+  <h2 class="text-capitalize">usuários aguardando oponentes <span class="wrap-text" data-wrapb="("
+      data-wrapa=")">{{matchesOnHold.length}}</span></h2>
+  {{#if matchesOnHold.length}}
+  <p class="lead">Clique em algum dos tabuleiros abaixo para entrar como o oponente!</p>
+  {{/if}}
+  {{#each matchesOnHold as |match|}}
+  <div class="small-board" title="Disputar contra {{match.userOwner.name}}">
+    <a href="/partida/{{match.id}}">
+      <div id="board-{{match.id}}"></div>
+      <div class="small-info text-white text-capitalize text-center">
+        <span class="{{getOwnerPieceColor match.author_color}}"><i class="fas fa-chess-king"></i></span>
+        <span>&nbsp;{{match.userOwner.name}}</span>
+      </div>
+    </a>
+  </div>
+  <script>//§
+    Chessboard('board-{{match.id}}', {
+      orientation: '{{getOwnerPieceColor match.author_color}}',
+      position: '{{match.fen}}',
+      showNotation: false,
+    });
+  </script>
+  {{/each}}
+  <div class="clearfix"></div>
 
 </div>

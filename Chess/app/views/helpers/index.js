@@ -36,6 +36,10 @@ module.exports = {
     return '';
   },
 
+  getOwnerPieceColor: (ownerColor) => (ownerColor === 'w' ? 'white' : 'black'),
+
+  getOpponentPieceColor: (ownerColor) => (ownerColor === 'w' ? 'black' : 'white'),
+
 
   // ██████╗ ████████╗██╗  ██╗███████╗██████╗ ███████╗
   // ██╔═══██╗╚══██╔══╝██║  ██║██╔════╝██╔══██╗██╔════╝

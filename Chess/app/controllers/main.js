@@ -1,14 +1,53 @@
 const { wrapAsync, comparePasswords } = require('../../lib/utils');
 const models = require('../models');
 
-const { ValidationError, ValidationErrorItem } = models.Sequelize;
+const { ValidationError, ValidationErrorItem, Op } = models.Sequelize;
 
 const { Curso, User, Partida } = models;
 
 const log = logger('controllers');
 
-function index(req, res) {
-  return res.render('main/index');
+async function index(req, res) {
+  const userIdAuthor = req.session.uid;
+  if (!userIdAuthor) {
+    return res.end(); // TODO: Forbidden (needs login)
+  }
+
+  // Partidas em que o usuário ou é o criador ou o adversário
+  const userMatches = await Partida.findAll({
+    where: {
+      [Op.or]: [
+        { id_user_1: userIdAuthor },
+        { id_user_2: userIdAuthor },
+      ],
+    },
+    include: [
+      { association: 'userOwner', required: true, attributes: ['name'] },
+      { association: 'userOpponent', required: false, attributes: ['name'] },
+    ],
+  });
+
+  // Partidas de outros usuários que não há oponentes
+  const matchesOnHold = await Partida.findAll({
+    where: {
+      id_user_1: { [Op.ne]: userIdAuthor },
+      id_user_2: null,
+    },
+    include: { association: 'userOwner', attributes: ['name'] },
+  });
+
+  return res.render('main/index', {
+    styleResources: [
+      '/css/chessboard-1.0.0.min.css',
+    ],
+    jsResources: [
+      '/js/chess.min.js',
+      '/js/chessboard-1.0.0.min.js',
+      // '/socket.io/socket.io.js',
+    ],
+    userMatches,
+    matchesOnHold,
+  });
 }
 
 function about(req, res) {
@@ -139,6 +178,7 @@ async function login(req, res) {
 
       return res.redirect('/');
     } catch (err) {
+      log.error(err);
       return res.render('main/login', {
         page: 'Entrar',
         csrfToken: req.csrfToken(),
@@ -157,7 +197,11 @@ async function logout(req, res) {
 }
 
 async function game(req, res) { // TODO: finalizar
-  const userIdAuthor = req.session.uid || 1;
+  const userIdAuthor = req.session.uid;
+  if (!userIdAuthor) {
+    return res.end(); // TODO: Forbidden (needs login)
+  }
+
   const { color } = req.query;
   const { id: gameId } = req.params;
 
@@ -183,7 +227,18 @@ async function game(req, res) { // TODO: finalizar
     return res.end();
   }
 
-  if (color) { // Criar nova partida.
+  const pendingPartida = await Partida.findOne({
+    where: {
+      id_user_1: userIdAuthor,
+      id_user_2: null,
+    },
+  });
+
+  if (pendingPartida) {
+    return res.redirect(`/partida/${pendingPartida.id}`);
+  }
+
+  if (color) { // Criar nova partida ou usar a pendente.
     const newPartidaValues = {
       id_user_1: userIdAuthor,
       author_color: color,
@@ -202,24 +257,13 @@ async function game(req, res) { // TODO: finalizar
     }
   }
 
-  const pendingPartida = await Partida.findOne({
-    where: {
-      id_user_1: userIdAuthor,
-      id_user_2: null,
-    },
-  });
-
-  if (pendingPartida) {
-    return res.redirect(`/partida/${pendingPartida.id}`);
-  }
-
   return res.render('main/choosecolor', {
     page: 'nova partida',
   });
 }
 
 module.exports = {
-  index,
+  index: wrapAsync(index),
   about,
 
   signup: wrapAsync(signup),
