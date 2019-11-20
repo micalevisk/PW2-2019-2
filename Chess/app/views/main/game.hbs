@@ -1,75 +1,118 @@
 <div class="main__game container clearfix">
 
-  <div class="chess-board">
-  <div id="board"></div>
-  {{!-- <div class="opponents">Aguardando oponente.</div> --}}
-  <div id="status"></div>
-</div>
+  <div class="large-board">
+    <div id="board"></div>
+    <div class="pt-1 text-center">
+      {{#unless match.onHold}}
+      <div id="status" class="game-status"></div>
+      {{/unless}}
+      <div class="opponents">
+        {{#if match.onHold}}
+        <span class="text-white text-capitalize">aguardando oponente&hellip;</span>
+        {{else}}
+        <span class="{{getOwnerPieceColor match.author_color}}"><i class="fas fa-chess-king"></i></span>
+        <span id="user-{{match.userOwner.id}}" class="text-white text-capitalize">&nbsp;{{match.userOwner.name}}</span>
+        &times;
+        <span id="user-{{match.userOpponent.id}}" class="text-white text-capitalize">{{match.userOpponent.name}}&nbsp;</span>
+        <span class="{{getOpponentPieceColor match.author_color}}"><i class="fas fa-chess-king"></i></span>
+        {{/if}}
+      </div>
+    </div>
+  </div>
 
 </div>
 
 <script>
+const matchId = '{{match.id}}';
 
-var game = new Chess()
 var $status = $('#status')
-var $fen = $('#fen')
-var whiteSquareGrey = '#a9a9a9'
-var blackSquareGrey = '#696969'
 
-var boardElemSelector = '#board'
-var board = Chessboard(boardElemSelector, {
+let gameOnHold = {{match.onHold}};
+const boardOrientation = '{{match.orientation}}';
+
+const boardElemSelector = '#board'
+const board = Chessboard(boardElemSelector, {
+  position: '{{match.fen}}',
+  orientation: boardOrientation,
   width: '100px',
   draggable: true,
-  position: 'start',
   pieceTheme: '/img/chesspieces/wikipedia/{piece}.png',
   onDragStart: onDragStart,
   onDrop: onDrop,
   onMouseoverSquare: onMouseoverSquare,
   onMouseoutSquare: onMouseoutSquare,
   onSnapEnd: onSnapEnd,
-})
+});
+
+const game = new Chess();
+game.load('{{match.fen}}');
+
+const myUserId = '{{userId}}';
+const opponentUserId = myUserId === '{{match.userOwner.id}}' ? '{{match.userOpponent.id}}' : '{{match.userOwner.id}}';
+const $myInfo = $(`#user-${myUserId}`);
+const $opponentInfo = $(`#user-${opponentUserId}`);
+
+const socket = io({
+  transportOptions: {
+    polling: {
+      extraHeaders: {
+        'x-matchid': matchId,
+        'x-uid': myUserId,
+        'x-opuid': opponentUserId,
+      },
+    },
+  },
+});
+
+function isMyTurn() {
+  return boardOrientation.startsWith( game.turn() );
+}
 
 function removeGreySquares() {
   $(`${boardElemSelector} .square-55d63`).css('background', '')
 }
 
-function greySquare(square) {
+function highlightSquare(square) {
   var $square = $(`${boardElemSelector} .square-${square}`)
 
-  var background = whiteSquareGrey
+  var background = '#a9a9a9'
   if ($square.hasClass('black-3c85d')) {
-    background = blackSquareGrey
+    background = '#696969'
   }
 
   $square.css('background', background)
 }
 
 function onMouseoverSquare(square, piece) {
+  if (gameOnHold || game.game_over() || !isMyTurn()) return;
+
   // get list of possible moves for this square
-  var moves = game.moves({
+  const moves = game.moves({
     square: square,
     verbose: true
-  })
+  });
 
   // exit if there are no moves available for this square
-  if (moves.length === 0) return
+  if (moves.length === 0) return;
 
   // highlight the square they moused over
-  greySquare(square)
+  highlightSquare(square);
 
   // highlight the possible squares for this piece
   for (var i = 0; i < moves.length; i++) {
-    greySquare(moves[i].to)
+    highlightSquare(moves[i].to);
   }
 }
 
 function onMouseoutSquare(square, piece) {
-  removeGreySquares()
+  if (gameOnHold || game.game_over() || !isMyTurn()) return;
+  removeGreySquares();
 }
 
-function onDragStart(source, piece /*, position, orientation */) {
-  // do not pick up pieces if the game is over
-  if (game.game_over()) return false
+
+function onDragStart(source, piece, position, orientation) {
+  if (gameOnHold || game.game_over()) return false;
+  if (!isMyTurn()) return false;
 
   // only pick up pieces for the side to move
   if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
@@ -79,23 +122,37 @@ function onDragStart(source, piece /*, position, orientation */) {
 }
 
 function onDrop(source, target) {
+  if (gameOnHold || game.game_over()) return false;
+
   removeGreySquares()
 
-  // see if the move is legal
-  var move = game.move({
+  const move = {
     from: source,
     to: target,
-    promotion: 'q' // NOTE: always promote to a queen for example simplicity
-  })
+    promotion: 'q', // NOTE: always promote to a queen for example simplicity
+  };
 
+  const updatedPosition = game.move(move);
   // illegal move
-  if (move === null) return 'snapback'
+  if (updatedPosition === null) return 'snapback';
 
   updateStatus()
+
+  // Emit this move
+  socket.emit('game:send-move', {//`actionMove` payload
+    source: move.from,
+    target: move.to,
+    promotion: move.promotion,
+    position: game.fen(),
+    match: {
+      id: matchId,
+      inDraw: game.in_draw(),
+      isOver: game.game_over(),
+    },
+  });
 }
 
-// update the board position after the piece snap
-// for castling, en passant, pawn promotion
+// update the board position after the piece snap for castling, en passant, pawn promotion
 function onSnapEnd() {
   board.position(game.fen())
 }
@@ -104,36 +161,80 @@ function onSnapEnd() {
 function updateStatus() {
   var status = ''
 
-  var moveColor = 'White'
+  var moveColor = 'branco'
   if (game.turn() === 'b') {
-    moveColor = 'Black'
+    moveColor = 'preto'
   }
 
   // checkmate?
   if (game.in_checkmate()) {
-    status = 'Game over, ' + moveColor + ' is in checkmate.'
+    status = `É xeque-mate! Vitória do jogador ${moveColor}!`
   }
 
   // draw?
   else if (game.in_draw()) {
-    status = 'Game over, drawn position'
+    status = 'O jogo empatou!'
   }
 
   // game still on
   else {
-    status = moveColor + ' to move'
+    status = `É a vez do jogador ${moveColor}.`
 
     // check?
     if (game.in_check()) {
-      status += ', ' + moveColor + ' is in check'
+      status += ` O jogador ${moveColor} está em xeque.`
     }
   }
 
   $status.html(status)
-  $fen.html(game.fen())
+
+  if (isMyTurn()) {
+    $myInfo.addClass('user-turn');
+    $opponentInfo.removeClass('user-turn');
+  } else {
+    $opponentInfo.addClass('user-turn');
+    $myInfo.removeClass('user-turn');
+  }
 }
 
 
-updateStatus()
+updateStatus();
+
+function pauseGame() {
+  console.info('the game is paused due to server connection...');
+  gameOnHold = true;
+  $status.html('Game is paused due to server connection!')
+}
+
+function resumeGame() {
+  console.info('the game is ready!');
+  gameOnHold = false;
+  updateStatus();
+}
+
+const eventsToPauseGame = ['connect_error', 'connect_timeout', 'disconnect'];
+const eventsToResumeGame = ['connect', 'reconnect'];
+eventsToPauseGame.forEach(eventName => socket.on(eventName, pauseGame));
+eventsToResumeGame.forEach(eventName => socket.on(eventName, resumeGame));
+
+if (!game.game_over()) {
+
+  socket.on('game:receive-move', function receivePieceMove(actionMove) {
+    console.log('recebeu movimento:', actionMove);
+    if (matchId !== actionMove.match.id) return;
+
+    //board.move(actionMove.source + '-' + actionMove.target);
+    board.position(actionMove.position);
+
+    game.move({
+      from: actionMove.source,
+      to: actionMove.target,
+      promotion: actionMove.promotion,
+    });
+
+    updateStatus();
+  });
+
+}
 
 </script>

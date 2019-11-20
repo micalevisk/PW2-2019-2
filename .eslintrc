@@ -3,6 +3,8 @@
   "extends": "airbnb-base",
   "globals": {
     "logger": false,
+    "__DEV__": false,
+    "__PROD__": false
   },
   "rules": {
     "no-console": "off",
@@ -39,6 +41,13 @@
       "files": ["Chess/bin/www"],
       "rules": {
         "no-use-before-define": "off"
+      }
+    },
+    {
+      "files": ["Chess/config/bootstrap.js"],
+      "rules": {
+        "no-multi-assign": "off",
+        "no-underscore-dangle": "off"
       }
     },
     {

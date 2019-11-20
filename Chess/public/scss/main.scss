@@ -1,15 +1,70 @@
-/* Font Awesome */
-@import "../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss";
-@import "../../node_modules/@fortawesome/fontawesome-free/scss/solid.scss";
-@import "../../node_modules/@fortawesome/fontawesome-free/scss/brands.scss";
+%board {
+  .black {
+    color: black;
+    text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+  }
 
-/* Bootstrap e Bootswatch */
-@import "./variables";
-@import "../../node_modules/bootstrap/scss/bootstrap.scss";
-@import "./bootswatch";
+  .white {
+    color: white;
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+  }
+}
+
+.main {
+
+  /* container About */
+  &__about {
+
+    img {
+      margin: 0 auto;
+      display: block;
+      width: 50%;
+    }
+
+  }
 
 
-/* major styles */
-@import "./styles";
+  /* container Index */
+  &__index {
 
-@import "./curso";
+    .small-board {
+      @extend %board;
+
+      width: 200px;
+      margin: 10px;
+      float: left;
+
+      a:hover {
+        text-decoration: none;
+        text-shadow: 0 0 2px rgba($link-color, 0.6);
+      }
+    }
+
+  }
+
+
+  /* container Game */
+  &__game {
+
+    .large-board {
+      @extend %board;
+
+      width: 594px;
+      float: left;
+
+      [class^="piece-"] {
+        cursor: grab;
+      }
+    }
+
+    .opponents {
+      font-size: 180%;
+
+      .user-turn {
+        text-shadow: 0 0 3px rgba(0, 188, 140, 1);
+      }
+    }
+
+  }
+
+}

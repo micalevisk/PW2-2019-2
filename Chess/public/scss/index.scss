@@ -1,0 +1,19 @@
+/* Font Awesome */
+@import "../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss";
+@import "../../node_modules/@fortawesome/fontawesome-free/scss/solid.scss";
+@import "../../node_modules/@fortawesome/fontawesome-free/scss/brands.scss";
+
+/* Bootstrap e Bootswatch */
+@import "./variables";
+@import "../../node_modules/bootstrap/scss/bootstrap.scss";
+@import "./bootswatch";
+
+
+/* major styles */
+@import "./global_styles";
+
+/* styles on Curso page */
+@import "./curso";
+
+/* styles on Main page */
+@import "./main";

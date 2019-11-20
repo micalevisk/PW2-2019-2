@@ -41,6 +41,9 @@ npm install
 NODE_ENV=development npm run db:seed-all
 
 npm run dev
+
+# Usar o Redis em um container Docker (ou baixe em https://redis.io/download)
+docker run --name redis -p 6379:6379 -d -t redis:alpine
 ```
 
 

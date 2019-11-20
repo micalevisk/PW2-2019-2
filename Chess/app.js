@@ -22,10 +22,8 @@ const {
 const app = express();
 
 const isDevelopment = (app.get('env') === 'development');
-const isProduction = (app.get('env') === 'production');
-const hasSessionURL = (!!process.env.SESS_URL);
 
-const sessionStore = (isProduction || hasSessionURL) ? connectToSession(session) : null;
+const sessionStore = connectToSession(session);
 
 /**
  * App config

@@ -26,3 +26,11 @@ module.exports.capitalize = function capitalize(str) {
     (letter) => letter.toUpperCase(),
   );
 };
+
+module.exports.getBoardOrientation = function getBoardOrientation(userIsOwner, ownerColorId) {
+  if (userIsOwner) {
+    return (ownerColorId === 'w' ? 'white' : 'black');
+  }
+
+  return (ownerColorId === 'w' ? 'black' : 'white');
+};

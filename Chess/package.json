@@ -6,9 +6,10 @@
   "main": "./bin/www",
   "scripts": {
     "start": "cross-env DEBUG=chess:server NODE_ENV=production node .",
-    "dev": "cross-env DEBUG=chess:*,socket.io:* NODE_ENV=development nodemon .",
+    "dev": "cross-env npm-run-all -p dev:*",
     "debug": "cross-env DEBUG=chess:* NODE_ENV=debug nodemon --nolazy --inspect-brk=9229 .",
-    "sass:w": "node-sass --watch public/scss/ --output public/css/",
+    "dev:server": "cross-env NODE_ENV=development DEBUG=chess:*,socket.io:* nodemon .",
+    "dev:sass": "cross-env NODE_ENV=development node-sass --watch public/scss/ --output public/css/",
     "build-css": "node-sass --include-path scss public/scss/main.scss public/css/main.css",
     "db:migrate-status": "npx sequelize-cli db:migrate:status",
     "db:migrate": "npx sequelize-cli db:migrate",
@@ -16,7 +17,7 @@
     "db:seed-all": "npx sequelize-cli db:seed:all --debug",
     "db:seed-undo": "npx sequelize-cli db:seed:undo:all --debug"
   },
-  "author": "Micael Levi <mykael2010@hotmail.com>",
+  "author": "Micael Levi <mllc@icomp.ufam.edu.br>",
   "license": "MIT",
   "dependencies": {
     "@chrisoakman/chessboardjs": "^1.0.0",
@@ -46,6 +47,7 @@
     "@fortawesome/fontawesome-free": "^5.11.2",
     "cross-env": "^6.0.3",
     "node-sass": "^4.12.0",
-    "nodemon": "^1.19.1"
+    "nodemon": "^1.19.1",
+    "npm-run-all": "^4.1.5"
   }
 }

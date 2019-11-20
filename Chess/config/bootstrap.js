@@ -1,16 +1,16 @@
 const debug = require('debug');
 const fs = require('fs');
 
-const isProduction = (process.env.NODE_ENV === 'production');
-const isDevelopment = (process.env.NODE_ENV === 'development');
+const __DEV__ = global.__DEV__ = (process.env.NODE_ENV === 'development');
+const __PROD__ = global.__PROD__ = (process.env.NODE_ENV === 'production');
 
 /**
  * Load environment variables.
  */
 require('dotenv-safe').config({
   allowEmptyValues: false,
-  example: isProduction ? '.env.prod.example' : '.env.dev.example',
-  path: isDevelopment ? '.env.dev' : '.env',
+  example: __PROD__ ? '.env.prod.example' : '.env.dev.example',
+  path: __DEV__ ? '.env.dev' : '.env',
 });
 
 /**

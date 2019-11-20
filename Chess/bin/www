@@ -27,8 +27,63 @@ const server = http.createServer(app);
  */
 const io = socketIO(server);
 
-io.on('connect', (/* client */) => {
-  // do something
+/*
+io.use((socket, next) => {
+  const matchId = socket.handshake.headers['x-matchid'];
+  // eslint-disable-next-line no-param-reassign
+  socket.matchId = matchId;
+  return next();
+});
+*/
+
+/**
+ * Eventos
+ * - game
+ * -> send-move
+ * -> receive-move
+ * - status
+ * -> ready
+ */
+
+
+const onSendMove = (socket, actionMove) => {
+  const matchId = socket.handshake.headers['x-matchid'];
+  socket.broadcast.emit('game:receive-move', actionMove);
+
+  const newPartidaValues = {
+    fen: actionMove.position,
+  };
+
+  if (actionMove.match.isOver) {
+    log('fim do jogo!!', matchId);
+    // newPartidaValues.winner = actionMove.match.inDraw ? -1 :
+    // TODO: definir o id do vencedor, sendo -1 indicando empate
+  }
+
+  // TODO: move to a background job (vide https://youtu.be/uonKHztGhko)
+  /*
+  models.Partida.update(newPartidaValues, {
+    where: { id: matchId },
+  });
+  */
+};
+
+
+const ack = (socket) => {
+  const matchId = socket.handshake.headers['x-matchid'];
+  socket.on('game:send-move', onSendMove.bind(null, socket));
+  socket.emit('status:ready', matchId);
+};
+
+io.on('connect', (socket) => {
+  const matchId = socket.handshake.headers['x-matchid'];
+  log(`usuario '${socket.id}' conectado na partida ${matchId}`);
+
+  if (!matchId) { // AKA "não-autenticado"
+    return;
+  }
+
+  ack(socket);
 });
 
 

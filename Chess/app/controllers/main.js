@@ -1,4 +1,4 @@
-const { wrapAsync, comparePasswords } = require('../../lib/utils');
+const { wrapAsync, comparePasswords, getBoardOrientation } = require('../../lib/utils');
 const models = require('../models');
 
 const { ValidationError, ValidationErrorItem, Op } = models.Sequelize;
@@ -9,9 +9,6 @@ const log = logger('controllers');
 
 async function index(req, res) {
   const userIdAuthor = req.session.uid;
-  if (!userIdAuthor) {
-    return res.end(); // TODO: Forbidden (needs login)
-  }
 
   // Partidas em que o usuário ou é o criador ou o adversário
   const userMatches = await Partida.findAll({
@@ -51,7 +48,7 @@ async function index(req, res) {
 }
 
 function about(req, res) {
-  res.render('main/about', { page: 'Sobre' });
+  res.render('main/about', { page: 'sobre' });
 }
 
 function createSessionToUser(user, req) {
@@ -77,7 +74,7 @@ async function signup(req, res) {
 
   if (req.route.methods.get) {
     return res.render('main/signup', {
-      page: 'Cadastro de Usuário',
+      page: 'cadastro de usuário',
       cursos,
       csrfToken: req.csrfToken(),
     });
@@ -122,7 +119,7 @@ async function signup(req, res) {
       if (err instanceof ValidationError) {
         log.error(err);
         return res.render('main/signup', {
-          page: 'Cadastro de Usuário',
+          page: 'cadastro de usuário',
           cursos,
           csrfToken: req.csrfToken(),
           user: newUserValues,
@@ -151,7 +148,7 @@ async function login(req, res) {
 
   if (req.route.methods.get) {
     return res.render('main/login', {
-      page: 'Entrar',
+      page: 'entrar',
       csrfToken: req.csrfToken(),
       user: userData,
     });
@@ -180,7 +177,7 @@ async function login(req, res) {
     } catch (err) {
       log.error(err);
       return res.render('main/login', {
-        page: 'Entrar',
+        page: 'entrar',
         csrfToken: req.csrfToken(),
         user: userData,
         errors: err.errors,
@@ -196,35 +193,52 @@ async function logout(req, res) {
   return res.redirect('/login');
 }
 
-async function game(req, res) { // TODO: finalizar
+async function game(req, res, next) { // TODO: finalizar
   const userIdAuthor = req.session.uid;
-  if (!userIdAuthor) {
-    return res.end(); // TODO: Forbidden (needs login)
-  }
 
   const { color } = req.query;
   const { id: gameId } = req.params;
 
   if (gameId) {
-    const partida = await Partida.findByPk(gameId);
-    if (partida) {
-      // TODO: verificar se o usuário que solicitou tem permissão para ver essa partida
-
-      return res.render('main/game', {
-        page: 'Jogar!',
-        styleResources: [
-          '/css/chessboard-1.0.0.min.css',
-        ],
-        jsResources: [
-          '/js/chess.min.js',
-          '/js/chessboard-1.0.0.min.js',
-          '/socket.io/socket.io.js',
-        ],
-        partida,
-      });
+    let partidaRow = await Partida.findByPk(gameId, {
+      include: [
+        { association: 'userOwner', required: true, attributes: ['id', 'name'] },
+        { association: 'userOpponent', required: false, attributes: ['id', 'name'] },
+      ],
+    });
+    if (!partidaRow) {
+      return next(); // NOT FOUND
     }
 
-    return res.end();
+    // TODO: verificar se o usuário que solicitou tem permissão para ver essa partida
+
+    const userIsOwner = (partidaRow.id_user_1 === userIdAuthor);
+    const orientation = getBoardOrientation(userIsOwner, partidaRow.author_color);
+    let matchOnHold = (partidaRow.id_user_2 === null);
+
+    if (matchOnHold && !userIsOwner) {
+      partidaRow.set('id_user_2', userIdAuthor);
+      partidaRow.set('fen', 'start');
+      partidaRow = await partidaRow.save(); // FIXME: não atualiza os `include`
+      matchOnHold = false;
+    }
+
+    return res.render('main/game', {
+      page: 'jogar!',
+      styleResources: [
+        '/css/chessboard-1.0.0.min.css',
+      ],
+      jsResources: [
+        '/js/chess.min.js',
+        '/js/chessboard-1.0.0.min.js',
+        '/socket.io/socket.io.js',
+      ],
+      match: {
+        ...partidaRow.dataValues,
+        onHold: matchOnHold,
+        orientation,
+      },
+    });
   }
 
   const pendingPartida = await Partida.findOne({
@@ -261,6 +275,7 @@ async function game(req, res) { // TODO: finalizar
     page: 'nova partida',
   });
 }
+
 
 module.exports = {
   index: wrapAsync(index),

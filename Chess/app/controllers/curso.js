@@ -98,10 +98,10 @@ async function update(req, res, next) {
   }
 
   if (req.route.methods.post) {
-    cursoRow.initials = req.body.initials;
-    cursoRow.name = req.body.name;
-    cursoRow.description = req.body.description;
-    cursoRow.id_area = req.body.id_area;
+    cursoRow.set('initials', req.body.initials);
+    cursoRow.set('name', req.body.name);
+    cursoRow.set('description', req.body.description);
+    cursoRow.set('id_area', req.body.id_area);
 
     try {
       await cursoRow.save();
