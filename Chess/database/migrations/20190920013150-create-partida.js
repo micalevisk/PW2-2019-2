@@ -16,8 +16,8 @@ module.exports = {
         allowNull: true, // Se `NULL` então a partida não tem oponente definido
         type: Sequelize.INTEGER
       },
-      winner: {
-        allowNull: true, // Se `NULL` então a partida não foi finalizada
+      id_winner: {
+        allowNull: true, // Se `NULL` então a partida não foi finalizada ou resultou em empate
         type: Sequelize.INTEGER
       },
       fen: {

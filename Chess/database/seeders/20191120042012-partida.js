@@ -37,7 +37,7 @@ module.exports = {
         id: 4,
         fen: '8/8/8/3k4/8/8/8/2K5 b - - 0 64',
         author_color: 'w',
-        winner: -1,
+        winner: null,
         id_user_1: 3,
         id_user_2: 2,
         created_at: new Date(),

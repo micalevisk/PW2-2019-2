@@ -7,7 +7,12 @@ const {
 } = require('../../lib/utils');
 const models = require('../models');
 
-const { ValidationError, ValidationErrorItem, Op } = models.Sequelize;
+const {
+  ValidationError, ValidationErrorItem,
+  Op,
+  fn: SequelizeFN,
+  col: SequelizeCol,
+} = models.Sequelize;
 
 const { Curso, User, Partida } = models;
 
@@ -208,12 +213,12 @@ async function game(req, res, next) { // TODO: finalizar
   if (gameId) {
     let partidaRow = await Partida.findByPk(gameId, {
       include: [
-        { association: 'userOwner', required: true, attributes: ['id', 'name'] },
-        { association: 'userOpponent', required: false, attributes: ['id', 'name'] },
+        { association: 'userOwner', required: true, attributes: ['name'] },
+        { association: 'userOpponent', required: false, attributes: ['name'] },
       ],
     });
     if (!partidaRow) {
-      return next(); // NOT FOUND
+      return next(); // Not Found
     }
 
     const ownerFirstName = capitalize(getFirstname(partidaRow.userOwner.name));
@@ -235,9 +240,9 @@ async function game(req, res, next) { // TODO: finalizar
     }
 
     // TODO: Verificar se o usuário que solicitou tem permissão para ver essa partida
-    // if (![partidaRow.id_user_1, partidaRow.id_user_2].includes(userIdAuthor)) {
-    //   return next(); // FORBIDDEN
-    // }
+    if (![partidaRow.id_user_1, partidaRow.id_user_2].includes(userIdAuthor)) {
+      return next(); // TODO: Forbidden
+    }
 
     return res.render('main/game', {
       page: (opponentFirstName ? `${ownerFirstName} vs ${opponentFirstName}` : 'jogar!'),
@@ -294,6 +299,35 @@ async function game(req, res, next) { // TODO: finalizar
   });
 }
 
+async function ranking(req, res) {
+  const winners = await Partida.findAll({
+    raw: true,
+    group: ['id_winner'],
+    attributes: [
+      'id_winner',
+      [SequelizeFN('COUNT', 'id_winner'), 'wins'],
+      [SequelizeCol('winner.name'), 'name'],
+    ],
+    order: [
+      [SequelizeCol('wins'), 'DESC'],
+    ],
+    include: [
+      { association: 'winner', required: true, attributes: [] },
+    ],
+    where: {
+      id_winner: {
+        [Op.notIn]: ['null', '-1'],
+      },
+    },
+  });
+  // .map((el) => el.get({ plain: true })); // NOTE: when `raw:false`, due to issue https://github.com/sequelize/sequelize/issues/6950
+
+  return res.render('main/ranking', {
+    page: 'hall da fama',
+    winners,
+  });
+}
+
 
 module.exports = {
   index: wrapAsync(index),
@@ -304,4 +338,5 @@ module.exports = {
   logout: wrapAsync(logout),
 
   game: wrapAsync(game),
+  ranking: wrapAsync(ranking),
 };

@@ -26,6 +26,17 @@ module.exports = {
         onUpdate: 'restrict',
       }),
 
+      queryInterface.addConstraint('partida', ['id_winner'], {
+        type: 'foreign key',
+        name: 'partida_id_winner_fk',
+        references: {
+          table: 'user',
+          field: 'id',
+        },
+        onDelete: 'restrict',
+        onUpdate: 'restrict',
+      }),
+
     ]);
   },
 

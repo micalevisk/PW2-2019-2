@@ -53,7 +53,7 @@ const onSendMove = (socket, actionMove) => {
   };
 
   if (match.isOver) {
-    newPartidaValues.winner = (match.inDraw ? -1 : userIdTurn); // NOTE: `-1` == empate
+    newPartidaValues.winner = (match.inDraw ? null : userIdTurn); // NOTE: `NULL` means draw
   }
 
   // TODO: move to a background job (vide https://youtu.be/uonKHztGhko)

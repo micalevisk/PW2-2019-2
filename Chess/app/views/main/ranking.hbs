@@ -1,0 +1,26 @@
+<div class="main__ranking">
+
+  <div class="row">
+    <div class="col">
+
+      <table class="table table-hover table-borderless text-center">
+        <thead>
+          <tr class="table-secondary">
+            <th scope="col">Nome</th>
+            <th scope="col">Vitórias</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each winners as |winner|}}
+          <tr class="table-dark">
+            <td class="text-capitalize">{{winner.name}}</td>
+            <td>{{winner.wins}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+
+</div>

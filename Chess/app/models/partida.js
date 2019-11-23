@@ -4,11 +4,6 @@ class Partida extends Model {
   static init(sequelize) {
     super.init({
 
-      winner: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-      },
-
       fen: {
         type: DataTypes.STRING,
         defaultValue: '',
@@ -33,6 +28,7 @@ class Partida extends Model {
   static associate(models) {
     this.belongsTo(models.user, { foreignKey: 'id_user_1', as: 'userOwner' });
     this.belongsTo(models.user, { foreignKey: 'id_user_2', as: 'userOpponent' });
+    this.belongsTo(models.user, { foreignKey: 'id_winner', as: 'winner' });
   }
 }
 

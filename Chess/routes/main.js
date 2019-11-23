@@ -28,6 +28,6 @@ router.get('/logout',      controllers.main.logout);
 router.get('/partida/:id', canAccessPage, controllers.main.game);
 router.get('/partida',     canAccessPage, controllers.main.game);
 
-// router.get('/ranking',     controllers.main.ranking);
+router.get('/ranking',     canAccessPage, controllers.main.ranking);
 
 module.exports = router;
