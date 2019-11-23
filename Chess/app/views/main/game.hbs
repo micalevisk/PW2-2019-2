@@ -3,11 +3,11 @@
   <div class="large-board">
     <div id="board"></div>
     <div class="pt-1 text-center">
-      {{#unless match.onHold}}
+      {{#unless match.waitingOpponent}}
       <div id="status" class="game-status"></div>
       {{/unless}}
       <div class="opponents">
-        {{#if match.onHold}}
+        {{#if match.waitingOpponent}}
         <span class="text-white text-capitalize">aguardando oponente&hellip;</span>
         {{else}}
         <span class="{{getOwnerPieceColor match.author_color}}"><i class="fas fa-chess-king"></i></span>
@@ -22,21 +22,30 @@
 
 </div>
 
-<script>
+{{#section 'script'}}
+
+<script type="text/javascript">
+//(function (){
+
 const matchId = '{{match.id}}';
 
-var $status = $('#status')
+let gameOnHold = {{match.waitingOpponent}};
+const myColor = '{{match.userColor}}';
+const opponentColor = '{{match.opponentColor}}';
 
-let gameOnHold = {{match.onHold}};
-const boardOrientation = '{{match.orientation}}';
+const myUserId = '{{userId}}';
+const opponentUserId = (myUserId === '{{match.userOwner.id}}' ? '{{match.userOpponent.id}}' : '{{match.userOwner.id}}');
+
+const game = new Chess();
+game.load('{{match.fen}}');
 
 const boardElemSelector = '#board'
 const board = Chessboard(boardElemSelector, {
   position: '{{match.fen}}',
-  orientation: boardOrientation,
+  orientation: myColor,
   width: '100px',
-  draggable: true,
-  pieceTheme: '/img/chesspieces/wikipedia/{piece}.png',
+  draggable: !game.game_over(),
+  pieceTheme: '/img/chesspieces/neo/{piece}.png',
   onDragStart: onDragStart,
   onDrop: onDrop,
   onMouseoverSquare: onMouseoverSquare,
@@ -44,13 +53,14 @@ const board = Chessboard(boardElemSelector, {
   onSnapEnd: onSnapEnd,
 });
 
-const game = new Chess();
-game.load('{{match.fen}}');
+const mapColorPrefixToUserId = {
+  [myColor[0]]: myUserId,
+  [opponentColor[0]]: opponentUserId,
+};
 
-const myUserId = '{{userId}}';
-const opponentUserId = myUserId === '{{match.userOwner.id}}' ? '{{match.userOpponent.id}}' : '{{match.userOwner.id}}';
 const $myInfo = $(`#user-${myUserId}`);
 const $opponentInfo = $(`#user-${opponentUserId}`);
+const $status = $('#status');
 
 const socket = io({
   transportOptions: {
@@ -64,8 +74,9 @@ const socket = io({
   },
 });
 
+
 function isMyTurn() {
-  return boardOrientation.startsWith( game.turn() );
+  return myColor.toLowerCase()[0] == game.turn().toLowerCase();
 }
 
 function removeGreySquares() {
@@ -124,19 +135,19 @@ function onDragStart(source, piece, position, orientation) {
 function onDrop(source, target) {
   if (gameOnHold || game.game_over()) return false;
 
-  removeGreySquares()
+  removeGreySquares();
 
   const move = {
     from: source,
     to: target,
-    promotion: 'q', // NOTE: always promote to a queen for example simplicity
+    promotion: 'q', // NOTE: always promote to a queen
   };
 
   const updatedPosition = game.move(move);
   // illegal move
   if (updatedPosition === null) return 'snapback';
 
-  updateStatus()
+  updateStatus();
 
   // Emit this move
   socket.emit('game:send-move', {//`actionMove` payload
@@ -144,6 +155,7 @@ function onDrop(source, target) {
     target: move.to,
     promotion: move.promotion,
     position: game.fen(),
+    userIdTurn: mapColorPrefixToUserId[game.turn()],
     match: {
       id: matchId,
       inDraw: game.in_draw(),
@@ -158,35 +170,41 @@ function onSnapEnd() {
 }
 
 
-function updateStatus() {
-  var status = ''
+function updateStatus(status = '') {
+  if (!status) {
 
-  var moveColor = 'branco'
-  if (game.turn() === 'b') {
-    moveColor = 'preto'
-  }
-
-  // checkmate?
-  if (game.in_checkmate()) {
-    status = `É xeque-mate! Vitória do jogador ${moveColor}!`
-  }
-
-  // draw?
-  else if (game.in_draw()) {
-    status = 'O jogo empatou!'
-  }
-
-  // game still on
-  else {
-    status = `É a vez do jogador ${moveColor}.`
-
-    // check?
-    if (game.in_check()) {
-      status += ` O jogador ${moveColor} está em xeque.`
+    var moveColor = 'branco'
+    if (game.turn() === 'b') {
+      moveColor = 'preto'
     }
+
+    // checkmate?
+    if (game.in_checkmate()) {
+      status = `É xeque-mate! Vitória do jogador ${moveColor}!`
+    }
+
+    // draw?
+    else if (game.in_draw()) {
+      status = 'O jogo empatou!'
+      $myInfo.removeClass('user-turn');
+      $opponentInfo.removeClass('user-turn');
+    }
+
+    // game still on
+    else {
+      status = `É a vez do jogador ${moveColor}.`
+
+      // check?
+      if (game.in_check()) {
+        status += ` O jogador ${moveColor} está em xeque.`
+      }
+    }
+
   }
 
-  $status.html(status)
+  $status.html(status);
+
+  if (game.in_draw()) return;
 
   if (isMyTurn()) {
     $myInfo.addClass('user-turn');
@@ -200,30 +218,32 @@ function updateStatus() {
 
 updateStatus();
 
-function pauseGame() {
-  console.info('the game is paused due to server connection...');
-  gameOnHold = true;
-  $status.html('Game is paused due to server connection!')
-}
-
-function resumeGame() {
-  console.info('the game is ready!');
-  gameOnHold = false;
-  updateStatus();
-}
-
-const eventsToPauseGame = ['connect_error', 'connect_timeout', 'disconnect'];
-const eventsToResumeGame = ['connect', 'reconnect'];
-eventsToPauseGame.forEach(eventName => socket.on(eventName, pauseGame));
-eventsToResumeGame.forEach(eventName => socket.on(eventName, resumeGame));
 
 if (!game.game_over()) {
 
+  function pauseGame() {
+    console.info('the game is paused due to server connection...');
+    gameOnHold = true;
+
+    updateStatus('Game is paused due to server connection!');
+    $myInfo.removeClass('user-turn');
+    $opponentInfo.removeClass('user-turn');
+  }
+
+  function resumeGame() {
+    console.info('the game is ready!');
+    gameOnHold = false;
+    updateStatus();
+  }
+
+  const eventsToPauseGame = ['connect_error', 'connect_timeout', 'disconnect'];
+  const eventsToResumeGame = ['connect', 'reconnect'];
+  eventsToPauseGame.forEach(eventName => socket.on(eventName, pauseGame));
+  eventsToResumeGame.forEach(eventName => socket.on(eventName, resumeGame));
+
   socket.on('game:receive-move', function receivePieceMove(actionMove) {
-    console.log('recebeu movimento:', actionMove);
     if (matchId !== actionMove.match.id) return;
 
-    //board.move(actionMove.source + '-' + actionMove.target);
     board.position(actionMove.position);
 
     game.move({
@@ -237,4 +257,8 @@ if (!game.game_over()) {
 
 }
 
+
+//})();
 </script>
+
+{{/section}}

@@ -19,6 +19,13 @@ cd Chess
 cp .env.prod.example .env
 vim .env # Informe as credenciais da sua instância MySQL
 
+# Instanciar o Redis em um container Docker (ou baixe em https://redis.io/download)
+docker run -d --name mllc_redis -p 6379:6379 -it redis:alpine # a SESS_URI será `redis://localhost:6379`
+docker run -it --network=host --rm redis:alpine redis-cli  # Container para usar o `redis-cli` do conectado à instância anterior
+# para apagar o container criado
+docker container -f rm mllc_redis
+
+
 npm install
 
 npm run db:migrate
@@ -41,9 +48,6 @@ npm install
 NODE_ENV=development npm run db:seed-all
 
 npm run dev
-
-# Usar o Redis em um container Docker (ou baixe em https://redis.io/download)
-docker run --name redis -p 6379:6379 -d -t redis:alpine
 ```
 
 

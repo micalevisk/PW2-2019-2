@@ -103,15 +103,16 @@ app.use(logger('common'));
 app.use(routes);
 
 
-// catch 404 and forward to error handler
+// Catch 404 and forward to error handler
 app.use((req, res, next) => {
   next(createError(404));
 });
 
-/* eslint-disable no-unused-vars, no-param-reassign */
-// error handler middleware
+// Error handler middleware
 app.use((err, req, res, next) => {
-  err.status = err.status || 500;
+  Object.assign(err, {
+    status: err.status || 500,
+  });
 
   // set locals, only providing error details in development
   res.locals.message = err.message;

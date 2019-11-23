@@ -1,4 +1,10 @@
-const { wrapAsync, comparePasswords, getBoardOrientation } = require('../../lib/utils');
+const {
+  comparePasswords,
+  capitalize,
+  getBoardOrientation,
+  getFirstname,
+  wrapAsync,
+} = require('../../lib/utils');
 const models = require('../models');
 
 const { ValidationError, ValidationErrorItem, Op } = models.Sequelize;
@@ -210,21 +216,31 @@ async function game(req, res, next) { // TODO: finalizar
       return next(); // NOT FOUND
     }
 
-    // TODO: verificar se o usuário que solicitou tem permissão para ver essa partida
+    const ownerFirstName = capitalize(getFirstname(partidaRow.userOwner.name));
+    let opponentFirstName = partidaRow.userOpponent
+      && capitalize(getFirstname(partidaRow.userOpponent.name));
 
     const userIsOwner = (partidaRow.id_user_1 === userIdAuthor);
-    const orientation = getBoardOrientation(userIsOwner, partidaRow.author_color);
-    let matchOnHold = (partidaRow.id_user_2 === null);
+    const [userColor, opponentColor] = getBoardOrientation(userIsOwner, partidaRow.author_color);
+    const matchIsOver = (partidaRow.winner !== null);
+    let matchWaitingOpponent = (partidaRow.id_user_2 === null);
 
-    if (matchOnHold && !userIsOwner) {
+    if (matchWaitingOpponent && !userIsOwner) {
       partidaRow.set('id_user_2', userIdAuthor);
       partidaRow.set('fen', 'start');
       partidaRow = await partidaRow.save(); // FIXME: não atualiza os `include`
-      matchOnHold = false;
+
+      matchWaitingOpponent = false;
+      opponentFirstName = capitalize(getFirstname(partidaRow.userOpponent.name));
     }
 
+    // TODO: Verificar se o usuário que solicitou tem permissão para ver essa partida
+    // if (![partidaRow.id_user_1, partidaRow.id_user_2].includes(userIdAuthor)) {
+    //   return next(); // FORBIDDEN
+    // }
+
     return res.render('main/game', {
-      page: 'jogar!',
+      page: (opponentFirstName ? `${ownerFirstName} vs ${opponentFirstName}` : 'jogar!'),
       styleResources: [
         '/css/chessboard-1.0.0.min.css',
       ],
@@ -235,8 +251,10 @@ async function game(req, res, next) { // TODO: finalizar
       ],
       match: {
         ...partidaRow.dataValues,
-        onHold: matchOnHold,
-        orientation,
+        waitingOpponent: matchWaitingOpponent,
+        userColor,
+        opponentColor,
+        isOver: matchIsOver,
       },
     });
   }

@@ -3,7 +3,7 @@
   <div class="row">
     <div class="col-9 mt-4">
       <p class="lead">Seja bem vindo ao aplicativo de partidas de xadrez do Instituto de Computação. Para iniciar uma
-        nova partida, <a href="/game/new-match">clique aqui</a>.</p>
+        nova partida, <a href="/partida">clique aqui</a>.</p>
     </div>
     <div class="col-3">
       <img src="/img/chess-clipart.png" alt="">
@@ -34,6 +34,7 @@
     Chessboard('board-{{match.id}}', {
       position: '{{match.fen}}',
       orientation: '{{getOwnerPieceColor match.author_color}}',
+      //pieceTheme: '/img/chesspieces/neo/{piece}.png',
       showNotation: false,
     });
   </script>
@@ -59,6 +60,7 @@
     Chessboard('board-{{match.id}}', {
       position: '{{match.fen}}',
       orientation: '{{getOwnerPieceColor match.author_color}}',
+      //pieceTheme: '/img/chesspieces/neo/{piece}.png',
       showNotation: false,
     });
   </script>

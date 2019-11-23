@@ -1,5 +1,3 @@
-/* eslint-disable no-restricted-syntax */
-
 module.exports = {
 
   // ████████╗███████╗██╗  ██╗████████╗
@@ -59,4 +57,16 @@ module.exports = {
 
     return '';
   },
+
+
+  section(name, options) { // Using `this` so this can't be an arrow function
+    if (!this.__sections__) {
+      this.__sections__ = {};
+    }
+
+    this.__sections__[name] = options.fn(this);
+
+    return null;
+  },
+
 };

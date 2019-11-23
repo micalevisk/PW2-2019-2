@@ -26,9 +26,22 @@
   },
   "overrides": [
     {
+      "files": ["Chess/app.js"],
+      "rules": {
+        "no-unused-vars": "off"
+      }
+    },
+    {
       "files": ["Chess/app/models/*.js"],
       "rules": {
         "no-param-reassign": "off"
+      }
+    },
+    {
+      "files": ["Chess/app/views/helpers/index.js"],
+      "rules": {
+        "no-underscore-dangle": "off",
+        "no-restricted-syntax": "off"
       }
     },
     {

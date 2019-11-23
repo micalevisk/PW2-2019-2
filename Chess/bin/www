@@ -2,7 +2,7 @@
 require('../config/bootstrap');
 
 const http = require('http');
-const socketIO = require('socket.io');
+const SocketServer = require('socket.io');
 
 const app = require('../app');
 const models = require('../app/models');
@@ -23,67 +23,57 @@ app.set('port', PORT);
 const server = http.createServer(app);
 
 /**
- * Initialize Socket.io middleware.
+ * Create Socket.io server.
  */
-const io = socketIO(server);
+const io = new SocketServer(server);
 
-/*
 io.use((socket, next) => {
   const matchId = socket.handshake.headers['x-matchid'];
-  // eslint-disable-next-line no-param-reassign
-  socket.matchId = matchId;
+  const uid = socket.handshake.headers['x-uid'];
+  const opuid = socket.handshake.headers['x-opuid'];
+
+  Object.assign(socket, {
+    matchId,
+    uid,
+    opuid,
+  });
+
   return next();
 });
-*/
-
-/**
- * Eventos
- * - game
- * -> send-move
- * -> receive-move
- * - status
- * -> ready
- */
 
 
 const onSendMove = (socket, actionMove) => {
-  const matchId = socket.handshake.headers['x-matchid'];
-  socket.broadcast.emit('game:receive-move', actionMove);
+  const { matchId } = socket;
+  const { match, position, userIdTurn } = actionMove;
+
+  if (match.id !== matchId) { return; }
 
   const newPartidaValues = {
-    fen: actionMove.position,
+    fen: position,
   };
 
-  if (actionMove.match.isOver) {
-    log('fim do jogo!!', matchId);
-    // newPartidaValues.winner = actionMove.match.inDraw ? -1 :
-    // TODO: definir o id do vencedor, sendo -1 indicando empate
+  if (match.isOver) {
+    newPartidaValues.winner = (match.inDraw ? -1 : userIdTurn); // NOTE: `-1` == empate
   }
 
   // TODO: move to a background job (vide https://youtu.be/uonKHztGhko)
-  /*
   models.Partida.update(newPartidaValues, {
     where: { id: matchId },
   });
-  */
+
+  socket.broadcast.emit('game:receive-move', actionMove);
 };
 
-
-const ack = (socket) => {
-  const matchId = socket.handshake.headers['x-matchid'];
-  socket.on('game:send-move', onSendMove.bind(null, socket));
-  socket.emit('status:ready', matchId);
-};
 
 io.on('connect', (socket) => {
-  const matchId = socket.handshake.headers['x-matchid'];
-  log(`usuario '${socket.id}' conectado na partida ${matchId}`);
+  const { matchId } = socket;
 
   if (!matchId) { // AKA "não-autenticado"
     return;
   }
 
-  ack(socket);
+  socket.on('game:send-move', onSendMove.bind(null, socket));
+  socket.emit('status:ready', matchId);
 });
 
 

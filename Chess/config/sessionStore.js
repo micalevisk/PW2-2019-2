@@ -3,7 +3,7 @@ const redis = require('redis');
 
 const log = logger('session-store');
 
-const sessionURIIsDefined = () => !!(process.env.SESS_URL);
+const sessionURIIsDefined = () => !!(process.env.SESS_URI);
 
 
 /**
@@ -13,6 +13,7 @@ const sessionURIIsDefined = () => !!(process.env.SESS_URL);
 module.exports.connectToSession = function connectToSession(session) {
   if (!sessionURIIsDefined()) {
     if (__DEV__) {
+      log('is not in use');
       return undefined; // In DEVELOPMENT mode session storage is not required.
     }
 
@@ -22,7 +23,7 @@ module.exports.connectToSession = function connectToSession(session) {
 
   const RedisStore = connectRedis(session);
 
-  const redisClient = redis.createClient(process.env.SESS_URL);
+  const redisClient = redis.createClient(process.env.SESS_URI);
   redisClient.unref();
   redisClient.on('error', log.error);
 
