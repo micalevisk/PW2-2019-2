@@ -12,8 +12,8 @@ class User extends Model {
         validate: {
           notEmpty: true,
           len: {
-            args: [3, 50],
-            msg: 'Seu nome precisa ter de 3 a 50 caracteres!',
+            args: [3, 100],
+            msg: 'Seu nome precisa ter de 3 a 100 caracteres!',
           },
         },
       },
@@ -36,8 +36,8 @@ class User extends Model {
         validate: {
           notEmpty: true,
           len: {
-            args: [4, 20],
-            msg: 'Sua senha deve ter entre 4 a 20 caracteres!',
+            args: [6, 20],
+            msg: 'Sua senha deve ter entre 6 a 20 caracteres!',
           },
         },
       },
