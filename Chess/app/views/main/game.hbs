@@ -13,7 +13,8 @@
         <span class="{{getOwnerPieceColor match.author_color}}"><i class="fas fa-chess-king"></i></span>
         <span id="user-{{match.userOwner.id}}" class="text-white text-capitalize">&nbsp;{{match.userOwner.name}}</span>
         &times;
-        <span id="user-{{match.userOpponent.id}}" class="text-white text-capitalize">{{match.userOpponent.name}}&nbsp;</span>
+        <span id="user-{{match.userOpponent.id}}"
+          class="text-white text-capitalize">{{match.userOpponent.name}}&nbsp;</span>
         <span class="{{getOpponentPieceColor match.author_color}}"><i class="fas fa-chess-king"></i></span>
         {{/if}}
       </div>
@@ -22,243 +23,120 @@
 
 </div>
 
+{{#if match.waitingOpponent}}
+<audio preload="auto" autoplay loop>
+  <source src="https://www.chess.com/bundles/web/sounds/countdown-2-15.mp3" type="audio/mpeg"></audio>
+{{else}}
+  {{#if match.isOver}}
+  <audio preload="auto" autoplay>
+    <source src="https://www.chess.com/bundles/web/sounds/webm/game-end.webm" type="audio/webm">
+    <source src="https://www.chess.com/bundles/web/sounds/ogg/game-end.ogg" type="audio/ogg">
+    <source src="https://www.chess.com/bundles/web/sounds/mp3/game-end.mp3" type="audio/mpeg">
+    <source src="https://www.chess.com/bundles/web/sounds/wav/game-end.wav" type="audio/wav"></audio>
+  {{else}}
+  <div id="game-audios" style="display: none;">
+
+    <audio preload="auto" data-fn="gameStart">
+      <source src="https://www.chess.com/bundles/web/sounds/webm/game-start.webm" type="audio/webm">
+      <source src="https://www.chess.com/bundles/web/sounds/ogg/game-start.ogg" type="audio/ogg">
+      <source src="https://www.chess.com/bundles/web/sounds/mp3/game-start.mp3" type="audio/mpeg">
+      <source src="https://www.chess.com/bundles/web/sounds/wav/game-start.wav" type="audio/wav"></audio>
+
+    <audio preload="auto" data-fn="moveSelf">
+      <source src="https://www.chess.com/bundles/web/sounds/webm/move-self.webm" type="audio/webm">
+      <source src="https://www.chess.com/bundles/web/sounds/ogg/move-self.ogg" type="audio/ogg">
+      <source src="https://www.chess.com/bundles/web/sounds/mp3/move-self.mp3" type="audio/mpeg">
+      <source src="https://www.chess.com/bundles/web/sounds/wav/move-self.wav" type="audio/wav"></audio>
+
+    <audio preload="auto" data-fn="moveCheck">
+      <source src="https://www.chess.com/bundles/web/sounds/webm/move-check.webm" type="audio/webm">
+      <source src="https://www.chess.com/bundles/web/sounds/ogg/move-check.ogg" type="audio/ogg">
+      <source src="https://www.chess.com/bundles/web/sounds/mp3/move-check.mp3" type="audio/mpeg">
+      <source src="https://www.chess.com/bundles/web/sounds/wav/move-check.wav" type="audio/wav"></audio>
+
+
+    <audio preload="auto" data-fn="moveOpponent">
+      <source src="https://www.chess.com/bundles/web/sounds/webm/move-opponent.webm" type="audio/webm">
+      <source src="https://www.chess.com/bundles/web/sounds/ogg/move-opponent.ogg" type="audio/ogg">
+      <source src="https://www.chess.com/bundles/web/sounds/mp3/move-opponent.mp3" type="audio/mpeg">
+      <source src="https://www.chess.com/bundles/web/sounds/wav/move-opponent.wav" type="audio/wav"></audio>
+
+    <audio preload="auto" data-fn="capture">
+      <source src="https://www.chess.com/bundles/web/sounds/webm/capture.webm" type="audio/webm">
+      <source src="https://www.chess.com/bundles/web/sounds/ogg/capture.ogg" type="audio/ogg">
+      <source src="https://www.chess.com/bundles/web/sounds/mp3/capture.mp3" type="audio/mpeg">
+      <source src="https://www.chess.com/bundles/web/sounds/wav/capture.wav" type="audio/wav"></audio>
+
+    <audio preload="auto" data-fn="promote">
+      <source src="https://www.chess.com/bundles/web/sounds/webm/promote.webm" type="audio/webm">
+      <source src="https://www.chess.com/bundles/web/sounds/ogg/promote.ogg" type="audio/ogg">
+      <source src="https://www.chess.com/bundles/web/sounds/mp3/promote.mp3" type="audio/mpeg">
+      <source src="https://www.chess.com/bundles/web/sounds/wav/promote.wav" type="audio/wav"></audio>
+
+    <audio preload="auto" data-fn="illegal">
+      <source src="https://www.chess.com/bundles/web/sounds/webm/illegal.webm" type="audio/webm">
+      <source src="https://www.chess.com/bundles/web/sounds/ogg/illegal.ogg" type="audio/ogg">
+      <source src="https://www.chess.com/bundles/web/sounds/mp3/illegal.mp3" type="audio/mpeg">
+      <source src="https://www.chess.com/bundles/web/sounds/wav/illegal.wav" type="audio/wav"></audio>
+
+    <audio preload="auto" data-fn="notify">
+      <source src="https://www.chess.com/bundles/web/sounds/webm/notify.webm" type="audio/webm">
+      <source src="https://www.chess.com/bundles/web/sounds/ogg/notify.ogg" type="audio/ogg">
+      <source src="https://www.chess.com/bundles/web/sounds/mp3/notify.mp3" type="audio/mpeg">
+      <source src="https://www.chess.com/bundles/web/sounds/wav/notify.wav" type="audio/wav"></audio>
+
+  </div>
+  {{/if}}
+{{/if}}
+
+
 {{#section 'script'}}
 
 <script type="text/javascript">
-//(function (){
+  const matchId = '{{match.id}}';
 
-const matchId = '{{match.id}}';
-
-let gameOnHold = {{match.waitingOpponent}};
-const myColor = '{{match.userColor}}';
-const opponentColor = '{{match.opponentColor}}';
-
-const myUserId = '{{userId}}';
-const opponentUserId = (myUserId === '{{match.userOwner.id}}' ? '{{match.userOpponent.id}}' : '{{match.userOwner.id}}');
-
-const game = new Chess();
-game.load('{{match.fen}}');
-
-const boardElemSelector = '#board'
-const board = Chessboard(boardElemSelector, {
-  position: '{{match.fen}}',
-  orientation: myColor,
-  width: '100px',
-  draggable: !game.game_over(),
-  pieceTheme: '/img/chesspieces/neo/{piece}.png',
-  onDragStart: onDragStart,
-  onDrop: onDrop,
-  onMouseoverSquare: onMouseoverSquare,
-  onMouseoutSquare: onMouseoutSquare,
-  onSnapEnd: onSnapEnd,
-});
-
-const mapColorPrefixToUserId = {
-  [myColor[0]]: myUserId,
-  [opponentColor[0]]: opponentUserId,
-};
-
-const $myInfo = $(`#user-${myUserId}`);
-const $opponentInfo = $(`#user-${opponentUserId}`);
-const $status = $('#status');
-
-const socket = io({
-  transportOptions: {
-    polling: {
-      extraHeaders: {
-        'x-matchid': matchId,
-        'x-uid': myUserId,
-        'x-opuid': opponentUserId,
+  const socket = io({
+    transportOptions: {
+      polling: {
+        extraHeaders: {
+          'x-matchid': matchId,
+        },
       },
     },
-  },
-});
+  });
+</script>
 
+{{#if match.waitingOpponent}}
+<script type="text/javascript">
+  socket.on('match:set-opponent', function setOpponent(actionOpponent) {
+    if (matchId !== actionOpponent.matchId) return; // TODO: substituir essa lógica por `socket rooms`
 
-function isMyTurn() {
-  return myColor.toLowerCase()[0] == game.turn().toLowerCase();
-}
+    document.location.reload(true); // Reload the current page without use the cache
+                                    // to re-ender the view content.
+  });
+</script>
+{{else}}
+  {{#if match.userIsOpponent}}
+  <script type="text/javascript">
+    socket.emit('match:new-opponent', { matchId } /* `actionOpponent` payload */);
+  </script>
+  {{/if}}
+{{/if}}
 
-function removeGreySquares() {
-  $(`${boardElemSelector} .square-55d63`).css('background', '')
-}
+<script src="/js/main/game.js"></script>
+<script type="text/javascript">
+  startBoardAndGame({
+    matchId,
+    gameOnHold: JSON.parse('{{match.waitingOpponent}}'),
+    position: '{{match.fen}}',
+    myColor: '{{match.userColor}}',
+    opponentColor: '{{match.opponentColor}}',
 
-function highlightSquare(square) {
-  var $square = $(`${boardElemSelector} .square-${square}`)
-
-  var background = '#a9a9a9'
-  if ($square.hasClass('black-3c85d')) {
-    background = '#696969'
-  }
-
-  $square.css('background', background)
-}
-
-function onMouseoverSquare(square, piece) {
-  if (gameOnHold || game.game_over() || !isMyTurn()) return;
-
-  // get list of possible moves for this square
-  const moves = game.moves({
-    square: square,
-    verbose: true
+    myUserId: '{{userId}}',
+    opponentUserId: ('{{userId}}' === '{{match.userOwner.id}}' ? '{{match.userOpponent.id}}' : '{{match.userOwner.id}}'),
   });
 
-  // exit if there are no moves available for this square
-  if (moves.length === 0) return;
-
-  // highlight the square they moused over
-  highlightSquare(square);
-
-  // highlight the possible squares for this piece
-  for (var i = 0; i < moves.length; i++) {
-    highlightSquare(moves[i].to);
-  }
-}
-
-function onMouseoutSquare(square, piece) {
-  if (gameOnHold || game.game_over() || !isMyTurn()) return;
-  removeGreySquares();
-}
-
-
-function onDragStart(source, piece, position, orientation) {
-  if (gameOnHold || game.game_over()) return false;
-  if (!isMyTurn()) return false;
-
-  // only pick up pieces for the side to move
-  if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
-      (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
-    return false
-  }
-}
-
-function onDrop(source, target) {
-  if (gameOnHold || game.game_over()) return false;
-
-  removeGreySquares();
-
-  const move = {
-    from: source,
-    to: target,
-    promotion: 'q', // NOTE: always promote to a queen
-  };
-
-  const updatedPosition = game.move(move);
-  // illegal move
-  if (updatedPosition === null) return 'snapback';
-
-  updateStatus();
-
-  // Emit this move
-  socket.emit('game:send-move', {//`actionMove` payload
-    source: move.from,
-    target: move.to,
-    promotion: move.promotion,
-    position: game.fen(),
-    userIdTurn: mapColorPrefixToUserId[game.turn()],
-    match: {
-      id: matchId,
-      inDraw: game.in_draw(),
-      isOver: game.game_over(),
-    },
-  });
-}
-
-// update the board position after the piece snap for castling, en passant, pawn promotion
-function onSnapEnd() {
-  board.position(game.fen())
-}
-
-
-function updateStatus(status = '') {
-  if (!status) {
-
-    var moveColor = 'branco'
-    if (game.turn() === 'b') {
-      moveColor = 'preto'
-    }
-
-    // checkmate?
-    if (game.in_checkmate()) {
-      status = `É xeque-mate! Vitória do jogador ${moveColor}!`
-    }
-
-    // draw?
-    else if (game.in_draw()) {
-      status = 'O jogo empatou!'
-      $myInfo.removeClass('user-turn');
-      $opponentInfo.removeClass('user-turn');
-    }
-
-    // game still on
-    else {
-      status = `É a vez do jogador ${moveColor}.`
-
-      // check?
-      if (game.in_check()) {
-        status += ` O jogador ${moveColor} está em xeque.`
-      }
-    }
-
-  }
-
-  $status.html(status);
-
-  if (game.in_draw()) return;
-
-  if (isMyTurn()) {
-    $myInfo.addClass('user-turn');
-    $opponentInfo.removeClass('user-turn');
-  } else {
-    $opponentInfo.addClass('user-turn');
-    $myInfo.removeClass('user-turn');
-  }
-}
-
-
-updateStatus();
-
-
-if (!game.game_over()) {
-
-  function pauseGame() {
-    console.info('the game is paused due to server connection...');
-    gameOnHold = true;
-
-    updateStatus('Game is paused due to server connection!');
-    $myInfo.removeClass('user-turn');
-    $opponentInfo.removeClass('user-turn');
-  }
-
-  function resumeGame() {
-    console.info('the game is ready!');
-    gameOnHold = false;
-    updateStatus();
-  }
-
-  const eventsToPauseGame = ['connect_error', 'connect_timeout', 'disconnect'];
-  const eventsToResumeGame = ['connect', 'reconnect'];
-  eventsToPauseGame.forEach(eventName => socket.on(eventName, pauseGame));
-  eventsToResumeGame.forEach(eventName => socket.on(eventName, resumeGame));
-
-  socket.on('game:receive-move', function receivePieceMove(actionMove) {
-    if (matchId !== actionMove.match.id) return;
-
-    board.position(actionMove.position);
-
-    game.move({
-      from: actionMove.source,
-      to: actionMove.target,
-      promotion: actionMove.promotion,
-    });
-
-    updateStatus();
-  });
-
-}
-
-
-//})();
+  window.startBoardAndGame = null;// Prevent more than one call
 </script>
 
 {{/section}}

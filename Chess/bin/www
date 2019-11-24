@@ -27,33 +27,32 @@ const server = http.createServer(app);
  */
 const io = new SocketServer(server);
 
+/* eslint-disable no-param-reassign */
 io.use((socket, next) => {
   const matchId = socket.handshake.headers['x-matchid'];
-  const uid = socket.handshake.headers['x-uid'];
-  const opuid = socket.handshake.headers['x-opuid'];
 
-  Object.assign(socket, {
-    matchId,
-    uid,
-    opuid,
-  });
+  socket.matchId = matchId;
 
   return next();
 });
 
-
-const onSendMove = (socket, actionMove) => {
+const onSendMoveEvent = (socket, actionMove) => {
   const { matchId } = socket;
-  const { match, position, userIdTurn } = actionMove;
+  const {
+    position,
+    userIdTurn,
+    matchInDraw,
+    matchIsOver,
+  } = actionMove;
 
-  if (match.id !== matchId) { return; }
+  // TODO: assegurar que o usuário solicitado tem a vez (e permissão) para realizar o movimento
 
   const newPartidaValues = {
     fen: position,
   };
 
-  if (match.isOver) {
-    newPartidaValues.winner = (match.inDraw ? null : userIdTurn); // NOTE: `NULL` means draw
+  if (matchIsOver) {
+    newPartidaValues.id_winner = (matchInDraw ? null : userIdTurn); // NOTE: `NULL` means draw
   }
 
   // TODO: move to a background job (vide https://youtu.be/uonKHztGhko)
@@ -61,9 +60,15 @@ const onSendMove = (socket, actionMove) => {
     where: { id: matchId },
   });
 
+  // Attach the match id in `actionMove` payload
+  actionMove.matchId = matchId;
+
   socket.broadcast.emit('game:receive-move', actionMove);
 };
 
+const onNewOpponentEvent = (socket, actionOpponent) => {
+  socket.broadcast.emit('match:set-opponent', actionOpponent);
+};
 
 io.on('connect', (socket) => {
   const { matchId } = socket;
@@ -72,8 +77,10 @@ io.on('connect', (socket) => {
     return;
   }
 
-  socket.on('game:send-move', onSendMove.bind(null, socket));
+  socket.on('game:send-move', onSendMoveEvent.bind(null, socket));
   socket.emit('status:ready', matchId);
+  // NOTE: only matchs with `id_user_2` is not defined
+  socket.on('match:new-opponent', onNewOpponentEvent.bind(null, socket));
 });
 
 

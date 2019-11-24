@@ -211,32 +211,45 @@ async function game(req, res, next) { // TODO: finalizar
   const { id: gameId } = req.params;
 
   if (gameId) {
-    let partidaRow = await Partida.findByPk(gameId, {
+    let partidaRow = await Partida.findByPk(gameId, { // §
       include: [
-        { association: 'userOwner', required: true, attributes: ['name'] },
-        { association: 'userOpponent', required: false, attributes: ['name'] },
+        { association: 'userOwner', required: true, attributes: ['id', 'name'] },
+        { association: 'userOpponent', required: false, attributes: ['id', 'name'] },
       ],
     });
     if (!partidaRow) {
-      return next(); // Not Found
+      return next('router'); // Not Found
     }
 
     const ownerFirstName = capitalize(getFirstname(partidaRow.userOwner.name));
     let opponentFirstName = partidaRow.userOpponent
-      && capitalize(getFirstname(partidaRow.userOpponent.name));
+      ? capitalize(getFirstname(partidaRow.userOpponent.name))
+      : null;
 
-    const userIsOwner = (partidaRow.id_user_1 === userIdAuthor);
+    const userIsOwner = (userIdAuthor === partidaRow.id_user_1);
     const [userColor, opponentColor] = getBoardOrientation(userIsOwner, partidaRow.author_color);
-    const matchIsOver = (partidaRow.winner !== null);
+
+    let userIsOpponent = (userIdAuthor === partidaRow.id_user_2);
     let matchWaitingOpponent = (partidaRow.id_user_2 === null);
+    const matchIsOver = (partidaRow.id_winner !== null && !matchWaitingOpponent);
 
     if (matchWaitingOpponent && !userIsOwner) {
-      partidaRow.set('id_user_2', userIdAuthor);
-      partidaRow.set('fen', 'start');
-      partidaRow = await partidaRow.save(); // FIXME: não atualiza os `include`
+      await partidaRow.update({
+        id_user_2: userIdAuthor,
+        fen: 'start',
+      });
 
-      matchWaitingOpponent = false;
+      // Requery due to issues #3424 and #5471 (https://github.com/sequelize/sequelize/issues)
+      partidaRow = await Partida.findByPk(gameId, { // §
+        include: [
+          { association: 'userOwner', required: true, attributes: ['id', 'name'] },
+          { association: 'userOpponent', required: true, attributes: ['id', 'name'] },
+        ],
+      });
+
       opponentFirstName = capitalize(getFirstname(partidaRow.userOpponent.name));
+      userIsOpponent = true;
+      matchWaitingOpponent = false;
     }
 
     // TODO: Verificar se o usuário que solicitou tem permissão para ver essa partida
@@ -245,7 +258,7 @@ async function game(req, res, next) { // TODO: finalizar
     }
 
     return res.render('main/game', {
-      page: (opponentFirstName ? `${ownerFirstName} vs ${opponentFirstName}` : 'jogar!'),
+      page: (opponentFirstName ? `${ownerFirstName} vs ${opponentFirstName}` : 'esperando algum oponente'),
       styleResources: [
         '/css/chessboard-1.0.0.min.css',
       ],
@@ -255,11 +268,12 @@ async function game(req, res, next) { // TODO: finalizar
         '/socket.io/socket.io.js',
       ],
       match: {
-        ...partidaRow.dataValues,
+        ...partidaRow.get({ plain: true }),
         waitingOpponent: matchWaitingOpponent,
         userColor,
         opponentColor,
         isOver: matchIsOver,
+        userIsOpponent,
       },
     });
   }
@@ -320,7 +334,7 @@ async function ranking(req, res) {
       },
     },
   });
-  // .map((el) => el.get({ plain: true })); // NOTE: when `raw:false`, due to issue https://github.com/sequelize/sequelize/issues/6950
+  // .map((el) => el.get({ plain: true })); // NOTE: when `raw:false`, due to issue #6950
 
   return res.render('main/ranking', {
     page: 'hall da fama',

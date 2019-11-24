@@ -67,11 +67,17 @@
       "files": ["Chess/public/js/**/*.js"],
       "rules": {
         "prefer-arrow-callback": "off",
-        "no-alert": "off"
+        "no-alert": "off",
+        "no-use-before-define": "off"
       },
       "env": {
         "browser": true,
         "jquery": true
+      },
+      "globals": {
+        "Chess": true,
+        "Chessboard": true,
+        "socket": true
       }
     }
   ]
