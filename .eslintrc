@@ -32,6 +32,12 @@
       }
     },
     {
+      "files": ["Chess/io.js"],
+      "rules": {
+        "no-param-reassign": "off"
+      }
+    },
+    {
       "files": ["Chess/app/models/*.js"],
       "rules": {
         "no-param-reassign": "off"

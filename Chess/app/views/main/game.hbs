@@ -100,6 +100,8 @@
       polling: {
         extraHeaders: {
           'x-matchid': matchId,
+          'x-uid': '{{userId}}',
+          'x-uname': '{{userName}}',
         },
       },
     },
@@ -118,7 +120,7 @@
 {{else}}
   {{#if match.userIsOpponent}}
   <script type="text/javascript">
-    socket.emit('match:new-opponent', { matchId } /* `actionOpponent` payload */);
+    socket.emit('match:new-opponent');
   </script>
   {{/if}}
 {{/if}}
