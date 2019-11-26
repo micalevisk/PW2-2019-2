@@ -1,11 +1,19 @@
+.text-black {
+  color: black;
+}
+
+.text-white {
+  color: white;
+}
+
 %board {
-  .black {
-    color: black;
+  .piece-black {
+    @extend .text-black;
     text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
   }
 
-  .white {
-    color: white;
+  .piece-white {
+    @extend .text-white;
     text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
   }
 
@@ -17,6 +25,10 @@
   .black-3c85d {
     color: #eeeed2;
     background-color: #769656;
+  }
+
+  [class^="board-"] {
+    border: 0px solid black !important;
   }
 }
 
@@ -55,6 +67,19 @@
 
   /* container Game */
   &__game {
+    @mixin user-msg($orientation) {
+      text-align: $orientation;
+
+      .message-info,
+      .message-text {
+        float: $orientation;
+      }
+
+      .message-text::after {
+        #{$orientation}: 12%;
+      }
+    }
+
 
     .large-board {
       @extend %board;
@@ -63,7 +88,7 @@
       float: left;
 
       [class^="piece-"] {
-        cursor: grab;
+        cursor: grab !important;
       }
     }
 
@@ -73,6 +98,118 @@
       .user-turn {
         text-shadow: 0 0 3px rgba(0, 188, 140, 1);
       }
+    }
+
+    .chat {
+      width: 400px;
+      height: 592px;
+      max-height: 592px;
+      float: left;
+      background: #F2F5F8;
+      border-top-right-radius: 5px;
+      border-bottom-right-radius: 5px;
+      color: #434651;
+      // margin: 0.2%;
+
+      #chat-history {
+        padding: 0px;
+        border-bottom: 2px solid whitesmoke;
+        overflow-y: scroll;
+        height: 460px;
+        word-wrap: break-word;
+      }
+
+      #messages {
+        @extend %board; // apenas para usar `.piece--black` e `.piece-white`
+        list-style: none;
+        padding: 0px 10px;
+
+        > * {
+          @extend .clearfix;
+        }
+
+        .my-user-msg {
+          @include user-msg(right);
+        }
+
+        .other-user-msg {
+          @include user-msg(left);
+        }
+
+        .message-info {
+          margin-bottom: 10px;
+
+          .piece-icon {
+            font-size: 20px;
+            padding: 0px 6px;
+          }
+
+          .username {
+            @extend .text-capitalize;
+          }
+
+          .time {
+            color: #A8AAB1;
+            padding: 0px 6px;
+          }
+        }
+
+        .message-text {
+          font-weight: 700;
+          background: #94C2ED;
+          padding: 10px 12px;
+          line-height: 26px;
+          font-size: 16px;
+          border-radius: 7px;
+          margin-bottom: 4px;
+          width: 90%;
+          position: relative;
+
+          &::after {
+            content: " ";
+            bottom: 100%;
+            border: solid transparent;
+            height: 0;
+            width: 0;
+            position: absolute;
+            pointer-events: none;
+            border-bottom-color: #94C2ED;
+            border-width: 10px;
+            margin-left: -10px;
+          }
+        }
+      }
+
+      .chat-message {
+        padding: 10px;
+        position: sticky;
+        box-shadow: 0px -2px 0px 0px black;
+      }
+
+      #message-to-send {
+        width: 100%;
+        border: none;
+        padding: 10px 10px;
+        font: 14px/22px "Lato", Arial, sans-serif;
+        border-radius: 5px;
+        resize: none;
+      }
+
+      #send-message { // antigo `enviar`
+        float: right;
+        color: #94C2ED;
+        font-size: 16px;
+        text-transform: uppercase;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+        background: #F2F5F8;
+
+        &:hover {
+          color: #60a5e6;
+        }
+      }
+
     }
 
   }

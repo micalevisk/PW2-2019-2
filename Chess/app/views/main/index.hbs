@@ -18,13 +18,13 @@
       <div id="board-{{match.id}}"></div>
       <div class="small-info text-white text-capitalize text-center">
         {{#if match.userOpponent}}
-        <span class="{{getOwnerPieceColor match.author_color}}"><i class="fas fa-chess-king"></i></span>
+        <span class="piece-{{getOwnerPieceColor match.author_color}}"><i class="fas fa-chess-king"></i></span>
         <span>&nbsp;{{match.userOwner.name}}</span>
         <br>
-        <span class="{{getOpponentPieceColor match.author_color}}"><i class="fas fa-chess-king"></i></span>
+        <span class="piece-{{getOpponentPieceColor match.author_color}}"><i class="fas fa-chess-king"></i></span>
         <span>&nbsp;{{match.userOpponent.name}}</span>
         {{else}}
-        <i class="fas fa-chess-king {{getOwnerPieceColor match.author_color}}"></i>
+        <i class="fas fa-chess-king piece-{{getOwnerPieceColor match.author_color}}"></i>
         <span class="text-muted">&nbsp;aguardando oponente&hellip;</span>
         {{/if}}
       </div>

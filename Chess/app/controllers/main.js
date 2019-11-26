@@ -204,7 +204,7 @@ async function logout(req, res) {
   return res.redirect('/login');
 }
 
-async function game(req, res, next) { // TODO: finalizar
+async function game(req, res, next) {
   const userIdAuthor = req.session.uid;
 
   const { color } = req.query;
@@ -231,7 +231,8 @@ async function game(req, res, next) { // TODO: finalizar
 
     let userIsOpponent = (userIdAuthor === partidaRow.id_user_2);
     let matchWaitingOpponent = (partidaRow.id_user_2 === null);
-    const matchIsOver = (partidaRow.id_winner !== null && !matchWaitingOpponent);
+    // NOTE: `id_winner` equals to `NULL` could mean that the match is in draw or is pending.
+    const matchHasWinner = (partidaRow.id_winner !== null && !matchWaitingOpponent);
 
     if (matchWaitingOpponent && !userIsOwner) {
       await partidaRow.update({
@@ -252,7 +253,6 @@ async function game(req, res, next) { // TODO: finalizar
       matchWaitingOpponent = false;
     }
 
-    // TODO: Verificar se o usuário que solicitou tem permissão para ver essa partida
     if (![partidaRow.id_user_1, partidaRow.id_user_2].includes(userIdAuthor)) {
       return next(); // TODO: Forbidden
     }
@@ -269,11 +269,11 @@ async function game(req, res, next) { // TODO: finalizar
       ],
       match: {
         ...partidaRow.get({ plain: true }),
-        waitingOpponent: matchWaitingOpponent,
+        userIsOpponent,
         userColor,
         opponentColor,
-        isOver: matchIsOver,
-        userIsOpponent,
+        waitingOpponent: matchWaitingOpponent,
+        hasWinner: matchHasWinner,
       },
     });
   }

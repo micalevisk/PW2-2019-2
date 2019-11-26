@@ -11,7 +11,7 @@ function startBoardAndGame({
   const board = Chessboard(boardElemSelector, {
     position,
     orientation: myColor,
-    width: '100px',
+    // width: '100px',
     draggable: !game.game_over(),
     pieceTheme: '/img/chesspieces/neo/{piece}.png',
     onDragStart,
