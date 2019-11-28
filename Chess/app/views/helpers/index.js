@@ -58,6 +58,13 @@ module.exports = {
     return '';
   },
 
+  toBool: (boolStr) => {
+    if (['true', 'false'].includes(boolStr)) {
+      return JSON.parse(boolStr);
+    }
+
+    throw Error(`${boolStr} is not an valid boolean as string!`);
+  },
 
   section(name, options) { // Using `this` so this can't be an arrow function
     if (!this.__sections__) {

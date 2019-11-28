@@ -27,7 +27,7 @@
     </div>
     <div class="chat-message clearfix">
       <textarea name="message-to-send" id="message-to-send" placeholder="Escreva sua mensagem" rows="3"></textarea>
-      <button id="send-message" disabled>Enviar</button>
+      <button id="send-message" disabled title="enviar mensagem">Enviar</button>
     </div>
   </div>
 
@@ -110,8 +110,8 @@
       polling: {
         extraHeaders: {
           'x-matchid': matchId,
-          'x-uid': '{{userId}}',
-          'x-uname': '{{userName}}',
+          'x-uid': '{{session.uid}}',
+          'x-uname': '{{session.userName}}',
         },
       },
     },
@@ -139,68 +139,96 @@
 <script type="text/javascript">
   startBoardAndGame({
     matchId,
-    gameOnHold: JSON.parse('{{match.waitingOpponent}}'),
+    gameOnHold: '{{toBool match.waitingOpponent}}',
     position: '{{match.fen}}',
-    myColor: '{{match.userColor}}',
-    opponentColor: '{{match.opponentColor}}',
+    myColor: '{{match.userFullColor}}',
+    opponentColor: '{{match.opponentFullColor}}',
 
     myUserId: '{{userId}}',
-    opponentUserId: ('{{userId}}' === '{{match.userOwner.id}}' ? '{{match.userOpponent.id}}' : '{{match.userOwner.id}}'),
+    opponentUserId: ('{{userId}}' === '{{match.userOwner.id}}' ? '{{match.userOpponent.id}}' : '{{match.userOwner.id}}'),//§
   });
 
   window.startBoardAndGame = null;// Prevent more than one call
 </script>
 
 <script type="text/javascript">
+  const myUserId = '{{userId}}';
+  const userIsOpponent = '{{toBool match.userIsOpponent}}';
+  const opponentUserId = userIsOpponent ? '{{match.userOpponent.id}}' : '{{match.userOwner.id}}';//§
+  const myFullColor = '{{match.userFullColor}}';
+  const opponentFullColor = '{{match.opponentFullColor}}';
+  const mapUidToUserDate = {
+    [myUserId]: {
+      color: myFullColor[0],
+      fullColor: myFullColor,
+      name: userIsOpponent ? '{{match.userOwner.name}}' : '{{match.userOpponent.name}}',
+    },
+    [opponentUserId]: {
+      color: opponentFullColor[0],
+      fullColor: opponentFullColor,
+      name: userIsOpponent ? '{{match.userOpponent.name}}' : '{{match.userOwner.name}}',
+    },
+  };
+
+  console.table(mapUidToUserDate)
+
   const $chatBox = $('#messages');
   const $btnSendMessage = $('#send-message');
+  const $messagetToSend = $('#message-to-send');
 
+
+  $messagetToSend.keypress(function (evt) {
+    if (evt.keyCode === 13) {
+      $btnSendMessage.click();
+      return false; // To prevent default behavior.
+    }
+  });
 
   function renderMessage(messageText, messageDate, senderUid) {
-    // TODO: adicionar um LI na UL de chat
-    console.info(messageText)
+    const senderColor = mapUidToUserDate[senderUid].fullColor;
+    const senderName = mapUidToUserDate[senderUid].name;
+    const messageFormatedDate = messageDate;// FIXME: deve receber um timestamp e formatar aqui no client
+    const targetType = (senderUid == myUserId ? 'my' : 'other');
 
-    const senderColor = 'white'; // TODO: recuperar do lookup pelo `senderUid`
-    const senderName = 'felipe andre souza'; // TODO: recuperar do lookup pelo `senderUid`
-    const messageFormatedDate = '17/11/2019 01:57:51'; // TODO: usar o `messageDate`
+    console.info(`[${messageDate}][${targetType}]: ${messageText}`)
 
-    const _messageInfo = `
-      <div class="message-info">
-        <span class="piece-icon piece-${senderColor}"><i class="fas fa-chess-king"></i></span>
-        <span class="username">${senderName}</span>
-        <span class="time">${messageDate}</span>
-      </div>
+    const rawNewMessageItem = `
+      <li class="${targetType}-user-msg">
+        <div class="message-info">
+          <span class="piece-icon piece-${senderColor}"><i class="fas fa-chess-king"></i></span>
+          <span class="username">${senderName}</span>
+          <span class="time">${messageDate}</span>
+        </div>
+        <div class="message-text text-${senderColor}">${messageText}</div>
+      </li>
     `;
 
-    const _messageText = `
-      <div class="message-text text-${senderColor}">${messageText}</div>
-    `;
-
-    $chatBox.append()
+    $chatBox.append(rawNewMessageItem);
   }
 
   socket.on('chat:bulk-messages', function (actionMessages) {
     if (matchId !== actionMessages.matchId) return; // TODO: substituir essa lógica por `socket rooms`
 
     for (const actionMessage of actionMessages.messages) {
-      renderMessage(actionMessage.text, actionMessage.date, actionMessage.userId);
+      renderMessage(actionMessage.text, actionMessage.created_at, actionMessage.senderUid);
     }
   });
 
   socket.on('chat:receive-message', function (actionMessage) {
     if (matchId !== actionMessage.matchId) return; // TODO: substituir essa lógica por `socket rooms`
 
-    renderMessage(actionMessage.text, actionMessage.date, actionMessage.userId);
+    renderMessage(actionMessage.text, actionMessage.created_at, actionMessage.senderUid);
   });
 
   $btnSendMessage.click(function sendMessage() {
-    const actionMessage = {
+    const preActionMessage = { // `preActionMessage` payload
       text: messageText,// a mensagem em si
-      timestamp: Date.now(),// a data de envio no formato UNIX timestamp
-      // https://stackoverflow.com/questions/221294/how-do-you-get-a-timestamp-in-javascript
+      date: new Date(Date.now()).toLocaleString(),
+      //timestamp: Date.now(),// a data de envio no formato UNIX timestamp
+      // @see https://stackoverflow.com/questions/221294/how-do-you-get-a-timestamp-in-javascript
     };
 
-    socket.emit('chat:send-message', actionMessage);
+    socket.emit('chat:send-message', preActionMessage);
     //renderMessage()
   });
 

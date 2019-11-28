@@ -52,7 +52,7 @@ module.exports.capitalize = function capitalize(str) {
  *
  * @param {boolean} userIsOwner
  * @param {string} ownerColorId
- * @returns {string[]}
+ * @returns {['white','black']|['black','white']}
  */
 module.exports.getBoardOrientation = function getBoardOrientation(userIsOwner, ownerColorId) {
   const whiteBasedColors = ['white', 'black', 'white'];

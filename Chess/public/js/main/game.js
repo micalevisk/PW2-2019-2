@@ -119,7 +119,7 @@ function startBoardAndGame({
     updateStatus();
 
     // Emit this move
-    socket.emit('game:send-move', { // `actionMove` payload
+    socket.emit('game:send-move', { // `preActionMove` payload
       source: move.from,
       target: move.to,
       promotion: move.promotion,

@@ -227,7 +227,10 @@ async function game(req, res, next) {
       : null;
 
     const userIsOwner = (userIdAuthor === partidaRow.id_user_1);
-    const [userColor, opponentColor] = getBoardOrientation(userIsOwner, partidaRow.author_color);
+    const [
+      userFullColor,
+      opponentFullColor,
+    ] = getBoardOrientation(userIsOwner, partidaRow.author_color);
 
     let userIsOpponent = (userIdAuthor === partidaRow.id_user_2);
     let matchWaitingOpponent = (partidaRow.id_user_2 === null);
@@ -270,8 +273,8 @@ async function game(req, res, next) {
       match: {
         ...partidaRow.get({ plain: true }),
         userIsOpponent,
-        userColor,
-        opponentColor,
+        userFullColor,
+        opponentFullColor,
         waitingOpponent: matchWaitingOpponent,
         hasWinner: matchHasWinner,
       },

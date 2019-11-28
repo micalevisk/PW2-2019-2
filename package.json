@@ -11,6 +11,7 @@
     "requirements-check": "node ./check-node-version.js",
     "postinstall": "npm install --prefix Chess",
     "lint:fix": "eslint --fix .",
+    "start": "cd Chess && npm start",
     "dev": "cd Chess && npm run dev"
   },
   "repository": {
