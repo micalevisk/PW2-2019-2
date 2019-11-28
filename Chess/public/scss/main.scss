@@ -201,12 +201,12 @@
         font-size: 16px;
         text-transform: uppercase;
         border: none;
-        cursor: pointer;
         font-weight: bold;
         background: #F2F5F8;
 
-        &:hover {
+        &:hover:enabled {
           color: #60a5e6;
+          cursor: pointer;
         }
       }
 

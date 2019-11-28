@@ -22,79 +22,13 @@
   </div>
 
   <div class="chat">
-
     <div id="chat-history">
-      <ul id="messages">
-
-       <li class="other-user-msg">
-          <div class="message-info">
-            <span class="piece-icon piece-white"><i class="fas fa-chess-king"></i></span>
-            <span class="username">Felipe Andre Souza da Silva</span>
-            <span class="time">17/11/2019 01:57:51</span>
-          </div>
-          <div class="message-text text-white">
-            apenas mais um lorem ipsum da vida e eu sei lá o que
-          </div>
-        </li>
-        <li class="my-user-msg">
-          <div class="message-info">
-            <span class="piece-icon piece-black"><i class="fas fa-chess-king"></i></span>
-            <span class="username">micael levi lima cavalcante</span>
-            <span class="time">06/11/2019 02:21:20</span>
-          </div>
-          <div class="message-text text-black">
-            joga aí meu parceiro
-          </div>
-        </li>
-        <li class="other-user-msg">
-          <div class="message-info">
-            <span class="piece-icon piece-white"><i class="fas fa-chess-king"></i></span>
-            <span class="username">Felipe Andre Souza da Silva</span>
-            <span class="time">17/11/2019 01:57:51</span>
-          </div>
-          <div class="message-text text-white">
-            eu n sei fala qualquer coisa ai meu parteiro
-          </div>
-        </li>
-        <li class="my-user-msg">
-          <div class="message-info">
-            <span class="piece-icon piece-black"><i class="fas fa-chess-king"></i></span>
-            <span class="username">micael levi lima cavalcante</span>
-            <span class="time">17/11/2019 01:49:15</span>
-          </div>
-          <div class="message-text text-black">
-            tua vez mano
-          </div>
-        </li>
-        <li class="other-user-msg">
-          <div class="message-info">
-            <span class="piece-icon piece-white"><i class="fas fa-chess-king"></i></span>
-            <span class="username">Felipe Andre Souza da Silva</span>
-            <span class="time">17/11/2019 01:57:51</span>
-          </div>
-          <div class="message-text text-white">
-            pronto, dixxtroi
-          </div>
-        </li>
-        <li class="my-user-msg">
-          <div class="message-info">
-            <span class="piece-icon piece-black"><i class="fas fa-chess-king"></i></span>
-            <span class="username">micael levi lima cavalcante</span>
-            <span class="time">17/11/2019 01:49:15</span>
-          </div>
-          <div class="message-text text-black">
-            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-          </div>
-        </li>
-
-      </ul>
+      <ul id="messages"></ul> {{!-- NOTE: as mensagens não serão renderizadas pelo server. --}}
     </div>
-
     <div class="chat-message clearfix">
       <textarea name="message-to-send" id="message-to-send" placeholder="Escreva sua mensagem" rows="3"></textarea>
-      <button id="send-message">Enviar</button>
+      <button id="send-message" disabled>Enviar</button>
     </div>
-
   </div>
 
 </div>
@@ -216,5 +150,78 @@
 
   window.startBoardAndGame = null;// Prevent more than one call
 </script>
+
+<script type="text/javascript">
+  const $chatBox = $('#messages');
+  const $btnSendMessage = $('#send-message');
+
+
+  function renderMessage(messageText, messageDate, senderUid) {
+    // TODO: adicionar um LI na UL de chat
+    console.info(messageText)
+
+    const senderColor = 'white'; // TODO: recuperar do lookup pelo `senderUid`
+    const senderName = 'felipe andre souza'; // TODO: recuperar do lookup pelo `senderUid`
+    const messageFormatedDate = '17/11/2019 01:57:51'; // TODO: usar o `messageDate`
+
+    const _messageInfo = `
+      <div class="message-info">
+        <span class="piece-icon piece-${senderColor}"><i class="fas fa-chess-king"></i></span>
+        <span class="username">${senderName}</span>
+        <span class="time">${messageDate}</span>
+      </div>
+    `;
+
+    const _messageText = `
+      <div class="message-text text-${senderColor}">${messageText}</div>
+    `;
+
+    $chatBox.append()
+  }
+
+  socket.on('chat:bulk-messages', function (actionMessages) {
+    if (matchId !== actionMessages.matchId) return; // TODO: substituir essa lógica por `socket rooms`
+
+    for (const actionMessage of actionMessages.messages) {
+      renderMessage(actionMessage.text, actionMessage.date, actionMessage.userId);
+    }
+  });
+
+  socket.on('chat:receive-message', function (actionMessage) {
+    if (matchId !== actionMessage.matchId) return; // TODO: substituir essa lógica por `socket rooms`
+
+    renderMessage(actionMessage.text, actionMessage.date, actionMessage.userId);
+  });
+
+  $btnSendMessage.click(function sendMessage() {
+    const actionMessage = {
+      text: messageText,// a mensagem em si
+      timestamp: Date.now(),// a data de envio no formato UNIX timestamp
+      // https://stackoverflow.com/questions/221294/how-do-you-get-a-timestamp-in-javascript
+    };
+
+    socket.emit('chat:send-message', actionMessage);
+    //renderMessage()
+  });
+
+
+  // =========================================================================
+  const pauseGame = () => {
+    $btnSendMessage.attr('disabled', true);
+  };
+
+  const resumeGame = () => {
+    $btnSendMessage.attr('disabled', false);
+  };
+
+  const eventsToPauseGame = ['connect_error', 'connect_timeout', 'disconnect'];
+  const eventsToResumeGame = ['connect', 'reconnect'];
+  eventsToPauseGame.forEach((eventName) => socket.on(eventName, pauseGame));
+  eventsToResumeGame.forEach((eventName) => socket.on(eventName, resumeGame));
+
+
+
+</script>
+
 
 {{/section}}
