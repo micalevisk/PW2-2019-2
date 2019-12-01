@@ -1,4 +1,3 @@
-// @ts-nocheck
 const bcrypt = require('bcryptjs');
 
 const config = require('../config/config.json');

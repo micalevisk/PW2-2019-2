@@ -137,155 +137,41 @@
 
 <script src="/js/main/game.js"></script>
 <script type="text/javascript">
-  // Throttle function (c) https://codeburst.io/throttling-and-debouncing-in-javascript-646d076d0a44
-  function throttled(fn, delay = 1000) { // ES5 syntax
-    var lastCall = 0;
-    return function wrappedFn() {
-      var now = Date.now();
-
-      if (now - lastCall < delay) {
-        return;
-      }
-
-      lastCall = now;
-      return fn.apply(undefined, arguments);
-    };
-  }
-
-  startBoardAndGame({
-    matchId,
-    gameOnHold: JSON.parse('{{match.waitingOpponent}}') || socket.disconnected,
-    position: '{{match.fen}}',
-    myColor: '{{match.userFullColor}}',
-    opponentColor: '{{match.opponentFullColor}}',
-
-    myUserId: '{{session.userId}}',
-    opponentUserId: ('{{session.userId}}' === '{{match.userOwner.id}}' ? '{{match.userOpponent.id}}' : '{{match.userOwner.id}}'),//§
-  });
-
-  window.startBoardAndGame = null;// Prevent more than one call
-</script>
-
-<script type="text/javascript">
   const myUserId = '{{session.userId}}';
   const userIsOpponent = JSON.parse('{{match.userIsOpponent}}');
-  const opponentUserId = userIsOpponent ? '{{match.userOwner.id}}' : '{{match.userOpponent.id}}';//§
-  const myFullColor = '{{match.userFullColor}}';
-  const opponentFullColor = '{{match.opponentFullColor}}';
+  const opponentUserId = userIsOpponent ? '{{match.userOwner.id}}' : '{{match.userOpponent.id}}';
+
   const mapUidToUserDate = {
     [myUserId]: {
-      color: myFullColor[0],
-      fullColor: myFullColor,
+      fullColor: '{{match.userFullColor}}',
       name: '{{session.userName}}',
     },
     [opponentUserId]: {
-      color: opponentFullColor[0],
-      fullColor: opponentFullColor,
+      fullColor: '{{match.opponentFullColor}}',
       name: userIsOpponent ? '{{match.userOwner.name}}' : '{{match.userOpponent.name}}',
     },
   };
 
-  console.table(mapUidToUserDate)
-
-  const $chatBox = $('#chat-history');
-  const $messages = $('#messages');
-  const $btnSendMessage = $('#send-message');
-  const $messagetToSend = $('#message-to-send');
-
-
-  $messagetToSend.keypress(function (evt) {
-    if (evt.keyCode === 13) {
-      $btnSendMessage.click();
-      return false; // To prevent default behavior.
-    }
+  startBoardAndGame({
+    gameOnHold: JSON.parse('{{match.waitingOpponent}}') || socket.disconnected,
+    position: '{{match.fen}}',
+    matchId,
+    myUserId,
+    myFullColor: mapUidToUserDate[myUserId].fullColor,
+    opponentUserId,
+    opponentFullColor: mapUidToUserDate[opponentUserId].fullColor,
   });
 
-  function renderMessage(messageText, messageDate, senderUid) {
-    try {
-
-      const senderColor = mapUidToUserDate[senderUid].fullColor;
-      const senderName = mapUidToUserDate[senderUid].name;
-      const messageFormatedDate = messageDate;// FIXME: deve receber um timestamp e formatar aqui no client
-      const targetType = (senderUid == myUserId ? 'my' : 'other');
-
-      const rawNewMessageItem = `
-        <li class="${targetType}-user-msg">
-          <div class="message-info">
-            <span class="piece-icon piece-${senderColor}"><i class="fas fa-chess-king"></i></span>
-            <span class="username">${senderName}</span>
-            <span class="time">${messageDate}</span>
-          </div>
-          <div class="message-text text-${senderColor}">${messageText}</div>
-        </li>
-      `;
-
-      $messages.append(rawNewMessageItem);
-
-      $chatBox.scrollTop($messages.height());
-
-      return true; // Confirms that the message was rendered
-    } catch (err) {
-      console.error(err);
-      return false;
-    }
-  }
-
-  // NOTE: renderiza no client para manter a consistência da renderização da mensagem
-  const _loadedMessages = JSON.parse('{{{json messages}}}');
-  if (_loadedMessages) {
-    for (const actionMessage of _loadedMessages) {
-      if (!renderMessage(actionMessage.text, actionMessage.created_at, actionMessage.senderUid)) break;
-    }
-  }
-
-  socket.on('chat:receive-message', function (actionMessage) {
-    if (matchId !== actionMessage.matchId) return; // TODO: substituir essa lógica por `socket rooms`
-    console.log(actionMessage)
-    renderMessage(actionMessage.text, actionMessage.created_at, actionMessage.senderUid);
+  startChat({
+    pastMessages: JSON.parse('{{{json messages}}}'),
+    matchId,
+    userIsOpponent,
+    myUserId,
+    mapUidToUserDate,
   });
 
-  function sendMessage() {
-    const messageText = $messagetToSend.val().trim();
-    if (!messageText) return false;
-
-    const preActionMessage = { // `preActionMessage` payload
-      text: messageText,// a mensagem em si
-      timestamp: Math.round((new Date()).getTime() / 1000), // UNIX timestamp
-      //timestamp: (new Date).getTime(),// a data de envio no formato UNIX timestamp
-      //date: new Date(Date.now()).toLocaleString(),
-      // @see https://stackoverflow.com/questions/221294/how-do-you-get-a-timestamp-in-javascript
-    };
-
-    socket.emit('chat:send-message', preActionMessage, () => {// ACK
-      $messagetToSend.val('');
-    });
-
-    //renderMessage(messageText, new Date(preActionMessage.timestamp * 1000).toLocaleString(), myUserId);
-    //$messagetToSend.val('');
-  }
-
-  $btnSendMessage.click( throttled(sendMessage) )
-
-
-  // =========================================================================
-  const pauseGame = () => {
-    $btnSendMessage.addClass('disabled');
-    $btnSendMessage.attr('disabled', true);
-  };
-
-  const resumeGame = () => {
-    $btnSendMessage.removeClass('disabled');
-    $btnSendMessage.attr('disabled', false);
-  };
-
-  const eventsToPauseGame = ['connect_error', 'connect_timeout', 'disconnect'];
-  const eventsToResumeGame = ['connect', 'reconnect'];
-  eventsToPauseGame.forEach((eventName) => socket.on(eventName, pauseGame));
-  eventsToResumeGame.forEach((eventName) => socket.on(eventName, resumeGame));
-
-
-
+  window.startBoardAndGame = null;// Prevent more than one call
+  window.startChat = null;// Prevent more than one call
 </script>
-
 
 {{/section}}

@@ -27,10 +27,8 @@ type PActionMessage = {
   timestamp: number;
 }
 
-type SlimActionMessage = {
-  senderUid: number;
-  text: string;
-  created_at: string;
+type SlimActionMessage = PActionMessage & {
+  senderUid: string;
 }
 
 type ActionMessages = {

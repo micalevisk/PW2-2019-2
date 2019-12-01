@@ -1,8 +1,105 @@
 /* eslint-disable consistent-return, no-param-reassign */
+const EVTS_SOCKET_DISCONNECT = ['connect_error', 'connect_timeout', 'disconnect'];
+const EVTS_SOCKET_CONNECT = ['connect', 'reconnect'];
+
+// eslint-disable-next-line no-unused-vars
+function startChat({
+  matchId, myUserId, mapUidToUserDate, pastMessages,
+}) {
+  const $chatBox = $('#chat-history');
+  const $messages = $('#messages');
+  const $btnSendMessage = $('#send-message');
+  const $messagetToSend = $('#message-to-send');
+
+  function renderMessage({ text, timestamp, senderUid }) {
+    try {
+      const senderColor = mapUidToUserDate[senderUid].fullColor;
+      const senderName = mapUidToUserDate[senderUid].name;
+      const messageFormatedDate = new Date(timestamp).toLocaleString();
+      // eslint-disable-next-line eqeqeq
+      const targetType = (senderUid == myUserId ? 'my' : 'other');
+
+      const rawNewMessageItem = `
+        <li class="${targetType}-user-msg">
+          <div class="message-info">
+            <span class="piece-icon piece-${senderColor}"><i class="fas fa-chess-king"></i></span>
+            <span class="username">${senderName}</span>
+            <span class="time">${messageFormatedDate}</span>
+          </div>
+          <div class="message-text text-${senderColor}">${text}</div>
+        </li>
+      `;
+
+      $messages.append(rawNewMessageItem);
+
+      $chatBox.scrollTop($messages.height());
+
+      return true; // Confirms that the message was rendered
+    } catch (err) {
+      console.error(err);
+      return false;
+    }
+  }
+
+  // NOTE: renderiza no client para manter a consistência da renderização da mensagem
+  if (pastMessages) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const actionMessage of pastMessages) {
+      console.log(actionMessage);
+      if (!renderMessage(actionMessage)) break;
+    }
+  }
+
+  function sendMessage() {
+    const messageText = $messagetToSend.val().trim();
+    if (!messageText) return false;
+
+    const preActionMessage = { // `preActionMessage` payload
+      text: messageText,
+      timestamp: Date.now(),
+    };
+
+    socket.emit('chat:send-message', preActionMessage, () => { // ACK
+      $messagetToSend.val('');
+    });
+  }
+
+  $btnSendMessage.click(throttled(sendMessage));
+
+  $messagetToSend.keypress(function onKeypress(evt) {
+    if (evt.keyCode === 13) {
+      $btnSendMessage.click();
+      return false; // To prevent default behavior.
+    }
+  });
+
+
+  socket.on('chat:receive-message', function receiveMessage(actionMessage) {
+    // TODO: substituir essa lógica por `socket rooms`
+    if (matchId !== actionMessage.matchId) return;
+
+    renderMessage(actionMessage);
+  });
+
+  const disableSendMessage = () => {
+    $btnSendMessage.addClass('disabled');
+    $btnSendMessage.attr('disabled', true);
+  };
+
+  const enableSendMessage = () => {
+    $btnSendMessage.removeClass('disabled');
+    $btnSendMessage.attr('disabled', false);
+  };
+
+
+  EVTS_SOCKET_DISCONNECT.forEach((eventName) => socket.on(eventName, disableSendMessage));
+  EVTS_SOCKET_CONNECT.forEach((eventName) => socket.on(eventName, enableSendMessage));
+}
+
 
 // eslint-disable-next-line no-unused-vars
 function startBoardAndGame({
-  matchId, gameOnHold, position, myColor, opponentColor, myUserId, opponentUserId,
+  matchId, gameOnHold, position, myUserId, myFullColor, opponentUserId, opponentFullColor,
 }) {
   const game = new Chess();
   game.load(position);
@@ -10,7 +107,7 @@ function startBoardAndGame({
   const boardElemSelector = '#board';
   const board = Chessboard(boardElemSelector, {
     position,
-    orientation: myColor,
+    orientation: myFullColor,
     // width: '100px',
     draggable: !game.game_over(),
     pieceTheme: '/img/chesspieces/neo/{piece}.png',
@@ -22,8 +119,8 @@ function startBoardAndGame({
   });
 
   const mapColorPrefixToUserId = {
-    [myColor[0]]: myUserId,
-    [opponentColor[0]]: opponentUserId,
+    [myFullColor[0]]: myUserId,
+    [opponentFullColor[0]]: opponentUserId,
   };
 
   const $myInfo = $(`#user-${myUserId}`);
@@ -40,7 +137,7 @@ function startBoardAndGame({
 
 
   function isMyTurn() {
-    return myColor.toLowerCase()[0] === game.turn().toLowerCase();
+    return myFullColor.toLowerCase()[0] === game.turn().toLowerCase();
   }
 
   function removeGreySquares() {
@@ -194,13 +291,12 @@ function startBoardAndGame({
     updateStatus();
   };
 
-  const eventsToPauseGame = ['connect_error', 'connect_timeout', 'disconnect'];
-  const eventsToResumeGame = ['connect', 'reconnect'];
-  eventsToPauseGame.forEach((eventName) => socket.on(eventName, pauseGame));
-  eventsToResumeGame.forEach((eventName) => socket.on(eventName, resumeGame));
+  EVTS_SOCKET_DISCONNECT.forEach((eventName) => socket.on(eventName, pauseGame));
+  EVTS_SOCKET_CONNECT.forEach((eventName) => socket.on(eventName, resumeGame));
 
   socket.on('game:receive-move', function receivePieceMove(actionMove) {
-    if (matchId !== actionMove.matchId) return; // TODO: substituir essa lógica por `socket rooms`
+    // TODO: substituir essa lógica por `socket rooms`
+    if (matchId !== actionMove.matchId) return;
 
     board.position(actionMove.position);
 
@@ -214,4 +310,20 @@ function startBoardAndGame({
 
     updateStatus();
   });
+}
+
+
+/* eslint-disable */
+function throttled(fn, delay = 1000) { // ES5 syntax
+  var lastCall = 0;
+  return function wrappedFn() {
+    var now = Date.now();
+
+    if (now - lastCall < delay) {
+      return;
+    }
+
+    lastCall = now;
+    return fn.apply(undefined, arguments);
+  };
 }

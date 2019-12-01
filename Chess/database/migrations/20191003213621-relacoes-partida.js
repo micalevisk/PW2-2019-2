@@ -53,6 +53,11 @@ module.exports = {
         'partida_id_user_2_fk', // Nome da FK
       ),
 
+      queryInterface.removeConstraint(
+        'partida', // Tabela da FK
+        'partida_id_winner_fk', // Nome da FK
+      ),
+
     ]);
   }
 };

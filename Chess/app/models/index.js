@@ -27,6 +27,7 @@ User.init(connection);
 
 Area.associate(connection.models);
 Curso.associate(connection.models);
+Mensagem.associate(connection.models);
 Partida.associate(connection.models);
 
 module.exports = {

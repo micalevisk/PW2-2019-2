@@ -1,3 +1,4 @@
+// @ts-check
 const SocketServer = require('socket.io');
 
 const models = require('./app/models');
@@ -20,7 +21,6 @@ io.use((/** @type {SocketIO.Socket} */ socket, next) => {
   }
 });
 
-const messagesMock = [];
 
 /**
  *
@@ -85,22 +85,22 @@ const onSendMessageEvent = (socket, preActionMessage) => {
   const { matchId, userId } = socket;
   const { text, timestamp } = preActionMessage;
 
-  // TODO: usar o `models.messagem`
   const newMessageValues = {
-    // id_partida: matchId,
-    // id_user: userId,
-    senderUid: Number.parseInt(userId, 10), // TODO: sequelize retorne `string` em vez de `number`
+    id_partida: matchId,
+    id_user: userId,
     text,
-    created_at: new Date(timestamp * 1000).toLocaleString(), // valor criado pelo SGBD
+    timestamp,
   };
-  messagesMock.push(newMessageValues);// TODO: salvar no BD
+
+  // TODO: move to a background job
+  models.Mensagem.create(newMessageValues);
 
   /** @type {ActionMessage} */
   const actionMessage = {
     matchId,
-    senderUid: Number.parseInt(userId, 10),
+    senderUid: userId,
     text,
-    created_at: newMessageValues.created_at,
+    timestamp,
   };
 
   // socket.broadcast.emit('chat:receive-message', actionMessage);

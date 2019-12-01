@@ -28,9 +28,9 @@ docker container rm -f mllc_redis
 
 npm install
 
-npm run db:migrate
+npm run prod:db:migrate
 
-npm run db:seed-all
+npm run prod:db:seed
 
 npm start
 ```
@@ -45,9 +45,9 @@ cd Chess
 cp .env.dev.example .env.dev
 vim .env.dev # Informe as credenciais da sua instância MySQL
 
-NODE_ENV=development npm run db:migrate
+npm run dev:db:migrate
 
-NODE_ENV=development npm run db:seed-all
+npm run dev:db:seed
 
 npm run dev
 ```
@@ -58,6 +58,7 @@ Usuários criados (todos com a senha `123456`):
 - 1. `mllc@icomp.ufam.edu.br`
 - 2. `ana@gmail.com`
 - 3. `jb@gmail.com`
+<!-- WIP -->
 
 
 
@@ -79,7 +80,7 @@ Usuários criados (todos com a senha `123456`):
 7. [x] :seven: A página principal de todos os usuários irá apresentar uma listagem das partidas aguardando oponentes. A Figura 4 mostra a página principal de um usuário fictício chamado Eduardo Berlot. Quando o Eduardo aceita o desafio da Mariana (clicando na partida mostrada na página principal), ele será direcionado para a página contendo o tabuleiro e poderá iniciar o jogo com a Mariana (vide Figura 5). Note que, como o Eduardo Berlot ficou com as peças pretas, então a parte de baixo de seu tabuleiro deverá conter as peças pretas. Por outro lado, como a Mariana ficou com as peças brancas, a parte de baixo de seu
 tabuleiro deverá conter as peças brancas.
 
-8. [ ] :eight: A implementação do chat apresentado nas Figuras 3 e 5 não é obrigatória. No entanto, o desenvolvimento do chat irá render alguns pontos extras para o aluno. A ideia do chat é a troca de mensagens entre os dois competidores da partida.
+8. [x] :eight: A implementação do chat apresentado nas Figuras 3 e 5 não é obrigatória. No entanto, o desenvolvimento do chat irá render alguns pontos extras para o aluno. A ideia do chat é a troca de mensagens entre os dois competidores da partida.
 
 9. [x] :nine: A opção **Ranking** do menu superior (rota `/ranking`) deverá mostrar uma página contendo uma listagem dos usuários com seus respectivos números de vitórias. O ranking deve mostrar apenas usuários que já venceram ao menos uma partida, e é ordenado de forma decrescente de acordo com o número de vitórias de cada um.
 

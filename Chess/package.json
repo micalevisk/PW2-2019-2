@@ -12,10 +12,13 @@
     "dev:sass": "cross-env NODE_ENV=development node-sass --watch public/scss/ --output public/css/",
     "build-css": "node-sass --include-path scss public/scss/main.scss public/css/main.css",
     "db:migrate-status": "npx sequelize-cli db:migrate:status",
-    "db:migrate": "npx sequelize-cli db:migrate",
-    "db:migrate-undo": "npx sequelize-cli db:migrate:undo",
-    "db:seed-all": "npx sequelize-cli db:seed:all --debug",
-    "db:seed-undo": "npx sequelize-cli db:seed:undo:all --debug"
+    "prod:db:migrate": "cross-env NODE_ENV=production npx sequelize-cli db:migrate",
+    "dev:db:migrate": "cross-env NODE_ENV=development npx sequelize-cli db:migrate",
+    "dev:db:migrate-undo": "cross-env NODE_ENV=development npx sequelize-cli db:migrate:undo",
+    "dev:db:migrate-undo-all": "cross-env NODE_ENV=development npx sequelize-cli db:migrate:undo:all",
+    "prod:db:seed": "cross-env NODE_ENV=production npx sequelize-cli db:seed:all -- --debug",
+    "dev:db:seed": "cross-env NODE_ENV=development npx sequelize-cli db:seed:all -- --debug",
+    "dev:db:seed-undo": "cross-env NODE_ENV=development npx sequelize-cli db:seed:undo:all --debug"
   },
   "author": "Micael Levi <mllc@icomp.ufam.edu.br>",
   "license": "MIT",

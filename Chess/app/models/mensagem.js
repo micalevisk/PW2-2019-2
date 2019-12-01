@@ -4,16 +4,16 @@ class Mensagem extends Model {
   static init(sequelize) {
     super.init({
 
-      id_partida: DataTypes.INTEGER, // TODO: remover quando for adicionar a relação
-
-      id_user: DataTypes.INTEGER, // TODO: remover quando for adicionar a relação
-
-      message: {
+      text: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
           notEmpty: true,
         },
+      },
+      timestamp: {
+        type: DataTypes.DATE,
+        allowNull: false,
       },
 
     }, {
@@ -22,6 +22,11 @@ class Mensagem extends Model {
       freezeTableName: true,
       underscored: true,
     });
+  }
+
+  static associate(models) {
+    this.belongsTo(models.partida, { foreignKey: 'id_partida', as: 'partida' });
+    this.belongsTo(models.user, { foreignKey: 'id_user', as: 'user' });
   }
 }
 

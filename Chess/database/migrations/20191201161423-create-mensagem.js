@@ -9,14 +9,20 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       id_partida: {
+        allowNull: false,
         type: Sequelize.INTEGER
       },
       id_user: {
+        allowNull: false,
         type: Sequelize.INTEGER
       },
-      message: {
+      text: {
         allowNull: false,
         type: Sequelize.STRING
+      },
+      timestamp: {
+        allowNull: false,
+        type: Sequelize.DATE
       },
       created_at: {
         allowNull: false,
