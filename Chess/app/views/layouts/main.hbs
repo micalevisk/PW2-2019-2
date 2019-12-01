@@ -51,7 +51,7 @@
               </div>
             </div>
           </li>
-          {{#if isLogged}}
+          {{#if session.isLogged}}
           <li class="nav-item">
             <a class="nav-link" href="/cursos">Cursos</a>
           </li>
@@ -59,9 +59,9 @@
           <li class="nav-item">
             <a class="nav-link" href="/sobre">Sobre</a>
           </li>
-          {{#if isLogged}}
+          {{#if session.isLogged}}
           <li class="nav-item">
-            <a class="nav-link" href="/logout">Sair <span class="text-capitalize wrap-text" data-wrapb="[" data-wrapa="]">{{userName}}</span></a>
+            <a class="nav-link" href="/logout">Sair <span class="text-capitalize wrap-text" data-wrapb="[" data-wrapa="]">{{session.userName}}</span></a>
           </li>
           {{else}}
           <li class="nav-item">

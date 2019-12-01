@@ -1,3 +1,4 @@
+// @ts-nocheck
 const bcrypt = require('bcryptjs');
 
 const config = require('../config/config.json');
@@ -5,7 +6,7 @@ const config = require('../config/config.json');
 /**
  *
  * @param {string} plainPassword
- * @returns {string}
+ * @returns {Promise<string>}
  */
 module.exports.cryptPassword = async function cryptPassword(plainPassword) {
   const salt = await bcrypt.genSalt(config.bcryptRound);

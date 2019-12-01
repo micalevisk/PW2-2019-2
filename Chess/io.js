@@ -6,27 +6,21 @@ const io = SocketServer();
 
 // eslint-disable-next-line consistent-return
 io.use((/** @type {SocketIO.Socket} */ socket, next) => {
-  Object.assign(socket, {
+  const authData = {
     matchId: socket.handshake.headers['x-matchid'],
     userId: socket.handshake.headers['x-uid'],
     userName: socket.handshake.headers['x-uname'],
-  });
+  };
 
-  if (socket.handshake.headers['x-matchid']) { // AKA "autenticado"
+  const authValues = Object.values(authData);
+  const isValidClient = authValues.length && authValues.every((val) => val && !!val.trim());
+  if (isValidClient) { // AKA "autenticado"
+    Object.assign(socket, authData);
     return next();
   }
 });
 
-/* eslint-disable spaced-comment */
-const messagesMock = [
-  // query: SELECT id_user as senderUid, message as text, created_at FROM message;
-  { /*id_partida: 5,*/ senderUid: 2, text: 'apenas mais um lorem ipsum da vida e eu sei lá o que', created_at: '2019-11-01 05:29:05' },
-  { /*id_partida: 5,*/ senderUid: 3, text: 'joga aí meu parceiro', created_at: '2019-11-02 05:29:05' },
-  { /*id_partida: 5,*/ senderUid: 2, text: 'eu n sei fala qualquer coisa ai meu parteiro', created_at: '2019-11-03 05:29:05' },
-  { /*id_partida: 5,*/ senderUid: 2, text: 'tua vez mano', created_at: '2019-11-04 05:29:05' },
-  { /*id_partida: 5,*/ senderUid: 3, text: 'pronto, dixxtroi', created_at: '2019-11-04 05:29:05' },
-  { /*id_partida: 5,*/ senderUid: 2, text: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', created_at: '2019-11-05 05:29:05' },
-];
+const messagesMock = [];
 
 /**
  *
@@ -89,42 +83,40 @@ const onNewOpponentEvent = (socket) => {
  */
 const onSendMessageEvent = (socket, preActionMessage) => {
   const { matchId, userId } = socket;
-  const { text, date } = preActionMessage;
+  const { text, timestamp } = preActionMessage;
 
   // TODO: usar o `models.messagem`
-  messagesMock.push({
+  const newMessageValues = {
     // id_partida: matchId,
     // id_user: userId,
     senderUid: Number.parseInt(userId, 10), // TODO: sequelize retorne `string` em vez de `number`
     text,
-    created_at: date,
-  });
+    created_at: new Date(timestamp * 1000).toLocaleString(), // valor criado pelo SGBD
+  };
+  messagesMock.push(newMessageValues);// TODO: salvar no BD
 
   /** @type {ActionMessage} */
   const actionMessage = {
     matchId,
     senderUid: Number.parseInt(userId, 10),
     text,
-    created_at: date,
+    created_at: newMessageValues.created_at,
   };
 
-  socket.broadcast.emit('chat:receive-message', actionMessage);
+  // socket.broadcast.emit('chat:receive-message', actionMessage);
+  io.emit('chat:receive-message', actionMessage); // TODO: substituir lógica por `socket rooms`
 };
 
 
 io.on('connect', (/** @type {Socket} */ socket) => {
   socket.on('game:send-move', onSendMoveEvent.bind(null, socket));
-  socket.on('chat:send-message', onSendMessageEvent.bind(null, socket));
   socket.once('match:new-opponent', onNewOpponentEvent.bind(null, socket));
 
-  // TODO: usar o `models.messagem`
-  /** @type {ActionMessages} */
-  const actionMessages = {
-    matchId: socket.matchId,
-    messages: messagesMock,
-  };
-
-  socket.emit('chat:bulk-messages', actionMessages);
+  // socket.on('chat:send-message', onSendMessageEvent.bind(null, socket));
+  socket.on('chat:send-message', (preActionMessage, ackFn) => {
+    ackFn();
+    onSendMessageEvent(socket, preActionMessage);
+  });
 });
 
 

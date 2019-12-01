@@ -6,9 +6,11 @@ router.use((req, res, next) => {
   req.isLogged = !!req.session.uid;
 
   // Handlebars variables
-  res.locals.isLogged = req.isLogged;
-  res.locals.userName = req.session.userName;
-  res.locals.userId = req.session.uid;
+  res.locals.session = {
+    isLogged: req.isLogged,
+    userName: req.session.userName,
+    userId: req.session.uid,
+  };
 
   next();
 });

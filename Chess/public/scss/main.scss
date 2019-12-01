@@ -117,6 +117,11 @@
         overflow-y: scroll;
         height: 460px;
         word-wrap: break-word;
+        /* prefixed by https://autoprefixer.github.io (PostCSS: v7.0.23, autoprefixer: v9.7.3) */
+        -webkit-mask-image: -webkit-gradient(linear,left top, left bottom,color-stop(92%, #000),to(#0000006b));
+        -webkit-mask-image: linear-gradient(180deg,#000 92%,#0000006b);
+                mask-image: -webkit-gradient(linear,left top, left bottom,color-stop(92%, #000),to(#0000006b));
+                mask-image: linear-gradient(180deg,#000 92%,#0000006b);
       }
 
       #messages {
@@ -183,7 +188,8 @@
       .chat-message {
         padding: 1px;
         position: sticky;
-        box-shadow: 0px -2px 0px 0px black;
+        // -webkit-box-shadow: 0px -2px 0px 0px black;
+        //         box-shadow: 0px -2px 0px 0px black;
       }
 
       #message-to-send {
@@ -197,7 +203,7 @@
 
       #send-message { // antigo `enviar`
         float: right;
-        color: #94C2ED;
+        color: #60a5e6;
         font-size: 16px;
         text-transform: uppercase;
         border: none;
@@ -205,7 +211,7 @@
         background: #F2F5F8;
 
         &:hover:enabled {
-          color: #60a5e6;
+          color: #94C2ED;
           cursor: pointer;
         }
       }

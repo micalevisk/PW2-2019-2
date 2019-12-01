@@ -4,11 +4,6 @@ type Socket = SocketIO.Socket & {
   userName: string;
 }
 
-type PActionMessage = {
-  text: string;
-  date: string;
-}
-
 type PActionMove = {
   source: string;
   target: string;
@@ -25,6 +20,11 @@ type ActionMove = {
   target: string;
   promotion: string;
   position: string;
+}
+
+type PActionMessage = {
+  text: string;
+  timestamp: number;
 }
 
 type SlimActionMessage = {

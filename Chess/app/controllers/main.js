@@ -204,6 +204,17 @@ async function logout(req, res) {
   return res.redirect('/login');
 }
 
+/* eslint-disable spaced-comment */
+const messagesMock = [
+  // query: SELECT id_user as senderUid, message as text, created_at FROM message;
+  { /*id_partida: 5,*/ senderUid: 2, text: 'apenas mais um lorem ipsum da vida e eu sei lá o que', created_at: '2019-11-01 05:29:05' },
+  { /*id_partida: 5,*/ senderUid: 3, text: 'joga aí meu parceiro', created_at: '2019-11-02 05:29:05' },
+  { /*id_partida: 5,*/ senderUid: 2, text: 'eu n sei fala qualquer coisa ai meu parteiro', created_at: '2019-11-03 05:29:05' },
+  { /*id_partida: 5,*/ senderUid: 2, text: 'tua vez mano', created_at: '2019-11-04 05:29:05' },
+  { /*id_partida: 5,*/ senderUid: 3, text: 'pronto, dixxtroi', created_at: '2019-11-04 05:29:05' },
+  { /*id_partida: 5,*/ senderUid: 2, text: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', created_at: '2019-11-05 05:29:05' },
+];
+
 async function game(req, res, next) {
   const userIdAuthor = req.session.uid;
 
@@ -278,6 +289,7 @@ async function game(req, res, next) {
         waitingOpponent: matchWaitingOpponent,
         hasWinner: matchHasWinner,
       },
+      messages: messagesMock,
     });
   }
 
