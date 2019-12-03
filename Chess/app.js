@@ -1,3 +1,4 @@
+const autoprefixer = require('autoprefixer');
 const cookieParser = require('cookie-parser');
 const csrf = require('csurf');
 const express = require('express');
@@ -5,8 +6,9 @@ const handlebars = require('express-handlebars');
 const session = require('express-session');
 const createError = require('http-errors');
 const logger = require('morgan');
-const sass = require('node-sass-middleware');
+const sassMiddleware = require('node-sass-middleware');
 const path = require('path');
+const postcssMiddleware = require('postcss-middleware');
 const uuid = require('uuid/v4');
 
 const viewsHelpers = require('./app/views/helpers');
@@ -44,9 +46,23 @@ app.set('views', path.join(__dirname, 'app', 'views'));
  * Middlewares
  */
 
-app.use(express.json());
+const sassDestPath = path.join(__dirname, 'public', 'css');
+app.use(sassMiddleware({
+  src: path.join(__dirname, 'public', 'scss'),
+  dest: sassDestPath,
+  prefix: '/css',
+  debug: isDevelopment,
+  outputStyle: 'compressed',
+}));
 
-app.use(express.urlencoded({ extended: false }));
+app.use('/css', postcssMiddleware({
+  plugins: [
+    autoprefixer(),
+  ],
+  src(req) {
+    return path.join(sassDestPath, req.path);
+  },
+}));
 
 // TODO: refatorar para evitar colisão de nomes de recursos e exposição de arquivos não usados
 app.use(express.static(path.join(__dirname, 'public')));
@@ -63,13 +79,9 @@ app.use('/css', [
   express.static(path.join(__dirname, 'node_modules/@chrisoakman/chessboardjs/dist')),
 ]);
 
-app.use(sass({
-  src: path.join(__dirname, 'public', 'scss'),
-  dest: path.join(__dirname, 'public', 'css'),
-  prefix: '/css',
-  debug: isDevelopment,
-  outputStyle: 'compressed',
-}));
+app.use(express.json());
+
+app.use(express.urlencoded({ extended: false }));
 
 app.use(cookieParser());
 
@@ -90,7 +102,7 @@ app.use(session({
   cookie: {
     maxAge: SESSION_LIFETIME,
     sameSite: true,
-    secure: false, // Secure cookies requires an https-enabled
+    secure: !!process.env.SECURE, // Secure cookies requires an https-enabled
   },
 }));
 

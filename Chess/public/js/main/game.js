@@ -45,7 +45,6 @@ function startChat({
   if (pastMessages) {
     // eslint-disable-next-line no-restricted-syntax
     for (const actionMessage of pastMessages) {
-      console.log(actionMessage);
       if (!renderMessage(actionMessage)) break;
     }
   }
