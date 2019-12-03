@@ -11,6 +11,10 @@
 
 ----------------------------------------
 
+<div align="center">
+  <a href="https://micalevisk-chessapp.herokuapp.com/"><img src="http://heroku-badge.herokuapp.com/?app=micalevisk-chessapp&style=flat" /></a>
+</div>
+
 ## Uso local
 
 ```bash
