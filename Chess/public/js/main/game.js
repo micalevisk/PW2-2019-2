@@ -51,7 +51,7 @@ function startChat({
 
   function sendMessage() {
     const messageText = $messagetToSend.val().trim();
-    if (!messageText) return false;
+    if (!messageText || socket.disconnected) return false;
 
     const preActionMessage = { // `preActionMessage` payload
       text: messageText,
