@@ -26,10 +26,6 @@
     color: #eeeed2;
     background-color: #769656;
   }
-
-  [class^="board-"] {
-    border: 0px solid black !important;
-  }
 }
 
 .main {
@@ -53,12 +49,20 @@
       @extend %board;
 
       width: 200px;
-      margin: 10px;
+      margin: auto;
       float: left;
 
       a:hover {
         text-decoration: none;
         text-shadow: 0 0 2px rgba($link-color, 0.6);
+      }
+
+      [class^="board-"]:hover {
+        border: 2px solid rgba($link-color, 0.6);
+      }
+
+      * {
+        margin: auto;
       }
     }
 
@@ -89,6 +93,10 @@
 
       [class^="piece-"] {
         cursor: grab !important;
+      }
+
+      [class^="board-"] {
+        border: 0px solid black !important;
       }
     }
 

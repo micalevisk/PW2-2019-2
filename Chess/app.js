@@ -5,7 +5,7 @@ const express = require('express');
 const handlebars = require('express-handlebars');
 const session = require('express-session');
 const createError = require('http-errors');
-const logger = require('morgan');
+const morganLogger = require('morgan');
 const sassMiddleware = require('node-sass-middleware');
 const path = require('path');
 const postcssMiddleware = require('postcss-middleware');
@@ -14,6 +14,8 @@ const uuid = require('uuid/v4');
 const viewsHelpers = require('./app/views/helpers');
 const { connectToSession } = require('./config/sessionStore');
 const routes = require('./routes');
+
+const log = logger('app');
 
 const {
   SESSION_SECRET = 'ZghOT0eRm4U9s:p/q2-q4!', // (chess move in descriptive notation)
@@ -106,7 +108,7 @@ app.use(session({
   },
 }));
 
-app.use(logger('common'));
+app.use(morganLogger('common'));
 
 /**
  * Routes
@@ -122,6 +124,8 @@ app.use((req, res, next) => {
 
 // Error handler middleware
 app.use((err, req, res, next) => {
+  log.error(err);
+
   Object.assign(err, {
     status: err.status || 500,
   });

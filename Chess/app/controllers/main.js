@@ -224,22 +224,8 @@ async function game(req, res, next) {
       return next('router'); // Not Found
     }
 
-    const ownerFirstName = capitalize(getFirstname(partidaRow.userOwner.name));
-    let opponentFirstName = partidaRow.userOpponent
-      ? capitalize(getFirstname(partidaRow.userOpponent.name))
-      : null;
-
-    const userIsOwner = (userIdAuthor === partidaRow.id_user_1);
-    const [
-      userFullColor,
-      opponentFullColor,
-    ] = getBoardOrientation(userIsOwner, partidaRow.author_color);
-
-    let userIsOpponent = (userIdAuthor === partidaRow.id_user_2);
     let matchWaitingOpponent = (partidaRow.id_user_2 === null);
-    // NOTE: `id_winner` equals to `NULL` could mean that the match is in draw or is pending.
-    const matchHasWinner = (partidaRow.id_winner !== null && !matchWaitingOpponent);
-
+    const userIsOwner = (userIdAuthor === partidaRow.id_user_1);
     if (matchWaitingOpponent && !userIsOwner) {
       await partidaRow.update({
         id_user_2: userIdAuthor,
@@ -254,14 +240,29 @@ async function game(req, res, next) {
         ],
       });
 
-      opponentFirstName = capitalize(getFirstname(partidaRow.userOpponent.name));
-      userIsOpponent = true;
       matchWaitingOpponent = false;
     }
 
     if (![partidaRow.id_user_1, partidaRow.id_user_2].includes(userIdAuthor)) {
       return next(); // TODO: Forbidden
     }
+
+    const ownerFirstName = capitalize(getFirstname(partidaRow.userOwner.name));
+    const opponentFirstName = (partidaRow.userOpponent)
+      ? capitalize(getFirstname(partidaRow.userOpponent.name))
+      : undefined;
+
+    const userIsOpponent = (userIdAuthor === partidaRow.id_user_2);
+
+    const [
+      userFullColor,
+      opponentFullColor,
+    ] = getBoardOrientation(userIsOwner, partidaRow.author_color);
+
+    // NOTE: `id_winner` equals to `NULL` could mean that the match is in draw or is pending.
+    const matchHasWinner = (partidaRow.id_winner !== null && !matchWaitingOpponent);
+
+    log(userIsOpponent + '>' + matchWaitingOpponent)
 
     const messages = await Mensagem.findAll({
       attributes: [

@@ -10,7 +10,6 @@ io.use((/** @type {SocketIO.Socket} */ socket, next) => {
   const authData = {
     matchId: socket.handshake.headers['x-matchid'],
     userId: socket.handshake.headers['x-uid'],
-    userName: socket.handshake.headers['x-uname'],
   };
 
   const authValues = Object.values(authData);
@@ -53,14 +52,13 @@ const onSendMoveEvent = (socket, preActionMove) => {
 
   /** @type {ActionMove} */
   const actionMove = {
-    matchId,
     source: preActionMove.source,
     target: preActionMove.target,
     position: preActionMove.position,
     promotion: preActionMove.promotion,
   };
 
-  socket.broadcast.emit('game:receive-move', actionMove);
+  socket.to(matchId).emit('game:receive-move', actionMove);
 };
 
 /**
@@ -68,11 +66,8 @@ const onSendMoveEvent = (socket, preActionMove) => {
  * @param {Socket} socket
  */
 const onNewOpponentEvent = (socket) => {
-  const actionOpponent = {
-    matchId: socket.matchId,
-  };
-
-  socket.broadcast.emit('match:set-opponent', actionOpponent);
+  const { matchId } = socket;
+  socket.to(matchId).emit('match:set-opponent');
 };
 
 
@@ -97,26 +92,31 @@ const onSendMessageEvent = (socket, preActionMessage) => {
 
   /** @type {ActionMessage} */
   const actionMessage = {
-    matchId,
     senderUid: userId,
     text,
     timestamp,
   };
 
-  // socket.broadcast.emit('chat:receive-message', actionMessage);
-  io.emit('chat:receive-message', actionMessage); // TODO: substituir lógica por `socket rooms`
+  io.in(matchId).emit('chat:receive-message', actionMessage);
 };
 
-
-io.on('connect', (/** @type {Socket} */ socket) => {
+/**
+ *
+ * @param {Socket} socket
+ */
+const onJoinMatch = (socket) => {
   socket.on('game:send-move', onSendMoveEvent.bind(null, socket));
   socket.once('match:new-opponent', onNewOpponentEvent.bind(null, socket));
 
-  // socket.on('chat:send-message', onSendMessageEvent.bind(null, socket));
   socket.on('chat:send-message', (preActionMessage, ackFn) => {
     ackFn();
     onSendMessageEvent(socket, preActionMessage);
   });
+};
+
+
+io.on('connect', (/** @type {Socket} */ socket) => {
+  socket.join(socket.matchId, onJoinMatch.bind(null, socket));
 });
 
 

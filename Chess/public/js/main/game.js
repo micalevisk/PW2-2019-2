@@ -4,7 +4,7 @@ const EVTS_SOCKET_CONNECT = ['connect', 'reconnect'];
 
 // eslint-disable-next-line no-unused-vars
 function startChat({
-  matchId, myUserId, mapUidToUserDate, pastMessages,
+  myUserId, mapUidToUserData, pastMessages,
 }) {
   const $chatBox = $('#chat-history');
   const $messages = $('#messages');
@@ -13,8 +13,8 @@ function startChat({
 
   function renderMessage({ text, timestamp, senderUid }) {
     try {
-      const senderColor = mapUidToUserDate[senderUid].fullColor;
-      const senderName = mapUidToUserDate[senderUid].name;
+      const senderColor = mapUidToUserData[senderUid].fullColor;
+      const senderName = mapUidToUserData[senderUid].name;
       const messageFormatedDate = new Date(timestamp).toLocaleString();
       // eslint-disable-next-line eqeqeq
       const targetType = (senderUid == myUserId ? 'my' : 'other');
@@ -73,12 +73,7 @@ function startChat({
   });
 
 
-  socket.on('chat:receive-message', function receiveMessage(actionMessage) {
-    // TODO: substituir essa lógica por `socket rooms`
-    if (matchId !== actionMessage.matchId) return;
-
-    renderMessage(actionMessage);
-  });
+  socket.on('chat:receive-message', renderMessage);
 
   const disableSendMessage = () => {
     $btnSendMessage.addClass('disabled');
@@ -294,9 +289,6 @@ function startBoardAndGame({
   EVTS_SOCKET_CONNECT.forEach((eventName) => socket.on(eventName, resumeGame));
 
   socket.on('game:receive-move', function receivePieceMove(actionMove) {
-    // TODO: substituir essa lógica por `socket rooms`
-    if (matchId !== actionMove.matchId) return;
-
     board.position(actionMove.position);
 
     game.move({

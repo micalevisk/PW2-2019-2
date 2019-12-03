@@ -111,7 +111,6 @@
         extraHeaders: {
           'x-matchid': matchId,
           'x-uid': '{{session.userId}}',
-          'x-uname': '{{session.userName}}',
         },
       },
     },
@@ -120,11 +119,9 @@
 
 {{#if match.waitingOpponent}}
 <script type="text/javascript">
-  socket.on('match:set-opponent', function setOpponent(actionOpponent) {
-    if (matchId !== actionOpponent.matchId) return; // TODO: substituir essa lógica por `socket rooms`
-
+  socket.on('match:set-opponent', function setOpponent() {
     document.location.reload(true); // Reload the current page without use the cache
-    // to re-ender the view content.
+                                    // to re-ender the view content.
   });
 </script>
 {{else}}
@@ -141,7 +138,7 @@
   const userIsOpponent = JSON.parse('{{match.userIsOpponent}}');
   const opponentUserId = userIsOpponent ? '{{match.userOwner.id}}' : '{{match.userOpponent.id}}';
 
-  const mapUidToUserDate = {
+  const mapUidToUserData = {
     [myUserId]: {
       fullColor: '{{match.userFullColor}}',
       name: '{{session.userName}}',
@@ -157,17 +154,16 @@
     position: '{{match.fen}}',
     matchId,
     myUserId,
-    myFullColor: mapUidToUserDate[myUserId].fullColor,
+    myFullColor: mapUidToUserData[myUserId].fullColor,
     opponentUserId,
-    opponentFullColor: mapUidToUserDate[opponentUserId].fullColor,
+    opponentFullColor: mapUidToUserData[opponentUserId].fullColor,
   });
 
   startChat({
     pastMessages: JSON.parse('{{{json messages}}}'),
-    matchId,
     userIsOpponent,
     myUserId,
-    mapUidToUserDate,
+    mapUidToUserData,
   });
 
   window.startBoardAndGame = null;// Prevent more than one call

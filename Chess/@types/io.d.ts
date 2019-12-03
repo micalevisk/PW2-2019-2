@@ -1,7 +1,6 @@
 type Socket = SocketIO.Socket & {
   matchId: string;
   userId: string;
-  userName: string;
 }
 
 type PActionMove = {
@@ -15,7 +14,6 @@ type PActionMove = {
 }
 
 type ActionMove = {
-  matchId: string;
   source: string;
   target: string;
   promotion: string;
@@ -27,15 +25,11 @@ type PActionMessage = {
   timestamp: number;
 }
 
-type SlimActionMessage = PActionMessage & {
+type ActionMessage = PActionMessage & {
   senderUid: string;
 }
 
 type ActionMessages = {
   matchId: string;
   messages: SlimActionMessage[];
-}
-
-type ActionMessage = SlimActionMessage & {
-  matchId: string;
 }
