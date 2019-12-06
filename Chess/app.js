@@ -108,7 +108,7 @@ app.use(session({
   },
 }));
 
-app.use(morganLogger('common'));
+app.use(morganLogger('short'));
 
 /**
  * Routes
