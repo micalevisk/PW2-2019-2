@@ -93,7 +93,7 @@ function startChat({
 
 // eslint-disable-next-line no-unused-vars
 function startBoardAndGame({
-  matchId, gameOnHold, position, myUserId, myFullColor, opponentUserId, opponentFullColor,
+  gameOnHold, position, myUserId, myFullColor, opponentUserId, opponentFullColor,
 }) {
   const game = new Chess();
   game.load(position);

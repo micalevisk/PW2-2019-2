@@ -168,6 +168,10 @@
 
   window.startBoardAndGame = null;// Prevent more than one call
   window.startChat = null;// Prevent more than one call
+
+  window.onunload = function disconnect() {
+    socket.close();
+  };
 </script>
 
 {{/section}}
