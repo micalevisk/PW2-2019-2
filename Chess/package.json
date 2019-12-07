@@ -5,10 +5,13 @@
   "private": true,
   "main": "./bin/www",
   "scripts": {
-    "start": "DEBUG=chess:server NODE_ENV=production node .",
-    "dev": "cross-env npm-run-all -p dev:*",
+    "start": "npm-run-all -p start:*",
+    "dev": "npm-run-all -p dev:*",
     "debug": "cross-env DEBUG=chess:* NODE_ENV=debug nodemon --nolazy --inspect-brk=9229 .",
+    "start:server": "DEBUG=chess:server NODE_ENV=production node .",
+    "start:queue": "DEBUG=chess:queue* NODE_ENV=production node queue",
     "dev:server": "cross-env NODE_ENV=development DEBUG=chess:*,socket.io:* nodemon .",
+    "dev:queue": "cross-env NODE_ENV=development node queue.js",
     "dev:sass": "cross-env NODE_ENV=development node-sass --watch public/scss/ --output public/css/",
     "build-css": "node-sass --include-path scss public/scss/main.scss public/css/main.css",
     "db:migrate-status": "npx sequelize-cli db:migrate:status",
@@ -28,6 +31,8 @@
     "autoprefixer": "^9.7.3",
     "bcryptjs": "^2.4.3",
     "bootstrap": "^4.3.1",
+    "bull": "^3.12.1",
+    "bull-board": "^0.6.0",
     "chess.js": "^0.10.2",
     "connect-redis": "^4.0.3",
     "cookie-parser": "^1.4.4",
@@ -42,6 +47,7 @@
     "morgan": "^1.9.1",
     "mysql2": "^1.7.0",
     "node-sass-middleware": "^0.11.0",
+    "npm-run-all": "^4.1.5",
     "popper.js": "^1.15.0",
     "postcss-middleware": "^1.1.4",
     "redis": "^2.8.0",
@@ -52,8 +58,7 @@
   "devDependencies": {
     "cross-env": "^6.0.3",
     "node-sass": "^4.12.0",
-    "nodemon": "^1.19.1",
-    "npm-run-all": "^4.1.5"
+    "nodemon": "^1.19.1"
   },
   "nodemonConfig": {
     "ignore": [

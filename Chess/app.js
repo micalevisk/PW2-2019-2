@@ -1,4 +1,5 @@
 const autoprefixer = require('autoprefixer');
+const BullBoard = require('bull-board');
 const cookieParser = require('cookie-parser');
 const csrf = require('csurf');
 const express = require('express');
@@ -13,6 +14,7 @@ const uuid = require('uuid/v4');
 
 const viewsHelpers = require('./app/views/helpers');
 const { connectToSession } = require('./config/sessionStore');
+const Queue = require('./lib/Queue');
 const routes = require('./routes');
 
 const log = logger('app');
@@ -24,6 +26,8 @@ const {
 } = process.env;
 
 const app = express();
+
+BullBoard.setQueues(Queue.queues.map((queue) => queue.bull));
 
 const isDevelopment = (app.get('env') === 'development');
 
@@ -48,6 +52,8 @@ app.set('views', path.join(__dirname, 'app', 'views'));
 /**
  * Middlewares
  */
+
+app.use('/admin/queues', BullBoard.UI);
 
 const sassDestPath = path.join(__dirname, 'public', 'css');
 app.use(sassMiddleware({

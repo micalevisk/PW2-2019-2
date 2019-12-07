@@ -64,6 +64,12 @@ Usuários criados (todos com a senha `123456`):
 - 3. `jb@gmail.com`
 <!-- WIP -->
 
+## Features
+
+- rota `/admin/queues` para acessar o dashboard do sistema de filas (Bull Dashboard)
+- o usuário que criar a partida pode escolher a cor da sua peça
+- _hint_ nas peças que podem ser movidas
+<!-- WIP -->
 
 
 ## Regras do Trabalho Prático

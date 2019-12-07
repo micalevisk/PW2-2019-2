@@ -18,7 +18,7 @@ const {
   Curso, User, Partida, Mensagem,
 } = models;
 
-const log = logger('controllers');
+const log = logger('controllers:main');
 
 
 async function index(req, res) {
@@ -261,8 +261,6 @@ async function game(req, res, next) {
 
     // NOTE: `id_winner` equals to `NULL` could mean that the match is in draw or is pending.
     const matchHasWinner = (partidaRow.id_winner !== null && !matchWaitingOpponent);
-
-    log(userIsOpponent + '>' + matchWaitingOpponent)
 
     const messages = await Mensagem.findAll({
       attributes: [

@@ -1,7 +1,7 @@
 // @ts-check
 const SocketServer = require('socket.io');
 
-const models = require('./app/models');
+const Queue = require('./lib/Queue');
 
 const io = SocketServer();
 
@@ -26,7 +26,7 @@ io.use((/** @type {SocketIO.Socket} */ socket, next) => {
  * @param {Socket} socket
  * @param {PActionMove} preActionMove
  */
-const onSendMoveEvent = (socket, preActionMove) => {
+const onSendMoveEvent = async (socket, preActionMove) => {
   const { matchId } = socket;
   const {
     position,
@@ -45,10 +45,7 @@ const onSendMoveEvent = (socket, preActionMove) => {
     newPartidaValues.id_winner = (matchInDraw ? null : userIdTurn); // NOTE: `NULL` means draw
   }
 
-  // TODO: move to a background job (vide https://youtu.be/uonKHztGhko)
-  models.Partida.update(newPartidaValues, {
-    where: { id: matchId },
-  });
+  await Queue.add(Queue.names.SAVE_MOVEMENT, { matchId, newPartidaValues });
 
   /** @type {ActionMove} */
   const actionMove = {
@@ -76,7 +73,7 @@ const onNewOpponentEvent = (socket) => {
  * @param {Socket} socket
  * @param {PActionMessage} preActionMessage
  */
-const onSendMessageEvent = (socket, preActionMessage) => {
+const onSendMessageEvent = async (socket, preActionMessage) => {
   const { matchId, userId } = socket;
   const { text, timestamp } = preActionMessage;
 
@@ -87,8 +84,7 @@ const onSendMessageEvent = (socket, preActionMessage) => {
     timestamp,
   };
 
-  // TODO: move to a background job
-  models.Mensagem.create(newMessageValues);
+  await Queue.add(Queue.names.SAVE_MESSAGE, { newMessageValues });
 
   /** @type {ActionMessage} */
   const actionMessage = {
