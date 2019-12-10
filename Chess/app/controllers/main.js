@@ -337,7 +337,6 @@ async function ranking(req, res) {
     raw: true,
     group: ['id_winner'],
     attributes: [
-      'id_winner',
       [SequelizeFN('COUNT', 'id_winner'), 'wins'],
       [SequelizeCol('winner.name'), 'name'],
     ],
