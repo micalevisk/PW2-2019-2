@@ -38,6 +38,7 @@
           <li class="nav-item">
             <a class="nav-link" href="/"><i class="fas fa-chess-rook"></i>&nbsp;Início</a>
           </li>
+          {{#if session.isLogged}}
           <li class="nav-item">
             <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
               <div class="btn-group" role="group">
@@ -51,7 +52,6 @@
               </div>
             </div>
           </li>
-          {{#if session.isLogged}}
           <li class="nav-item">
             <a class="nav-link" href="/cursos">Cursos</a>
           </li>
