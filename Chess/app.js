@@ -34,6 +34,7 @@ const sessionStore = connectToSession(session);
  */
 
 app.disable('x-powered-by');
+app.disable('etag');
 
 app.engine('hbs', handlebars({
   layoutsDir: path.join(__dirname, 'app', 'views', 'layouts'),
